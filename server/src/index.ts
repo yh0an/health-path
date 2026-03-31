@@ -4,6 +4,9 @@ import cors from 'cors';
 import path from 'path';
 
 import authRoutes from './routes/auth';
+import weightRoutes from './routes/weight';
+import nutritionRoutes from './routes/nutrition';
+import waterRoutes from './routes/water';
 import { authMiddleware } from './middleware/auth';
 
 // Les autres routes seront ajoutées au fur et à mesure des tasks suivantes
@@ -17,6 +20,9 @@ app.use(express.json());
 
 // Route publique auth
 app.use('/api/auth', authRoutes);
+app.use('/api/weight', authMiddleware, weightRoutes);
+app.use('/api/nutrition', authMiddleware, nutritionRoutes);
+app.use('/api/water', authMiddleware, waterRoutes);
 
 // Fichiers uploadés (protégés) — activé quand les photos sont implémentées
 // app.use('/api/uploads', authMiddleware, express.static(path.join(__dirname, '..', 'uploads')));
