@@ -9,6 +9,7 @@ import nutritionRoutes from './routes/nutrition';
 import waterRoutes from './routes/water';
 import photosRoutes from './routes/photos';
 import calendarRoutes from './routes/calendar';
+import settingsRoutes from './routes/settings';
 import { authMiddleware } from './middleware/auth';
 
 // Les autres routes seront ajoutées au fur et à mesure des tasks suivantes
@@ -27,6 +28,7 @@ app.use('/api/nutrition', authMiddleware, nutritionRoutes);
 app.use('/api/water', authMiddleware, waterRoutes);
 app.use('/api/photos', authMiddleware, photosRoutes);
 app.use('/api/calendar', authMiddleware, calendarRoutes);
+app.use('/api/settings', authMiddleware, settingsRoutes);
 
 // Fichiers uploadés (protégés)
 app.use('/api/uploads', authMiddleware, express.static(path.join(__dirname, '..', 'uploads')));
