@@ -1,0 +1,9 @@
+{
+  "name": "HealthPath",
+  "short_name": "HealthPath",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#34C759",
+  "icons": []
+}
