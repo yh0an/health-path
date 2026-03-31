@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Environment files (never commit real .env)
+.env
+server/.env
+client/.env
+
+# Build outputs
+dist/
+build/
+
+# Uploads (user data)
+server/uploads/
+
+# Prisma generated
+server/node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
