@@ -53,29 +53,15 @@ enum MealType {
 }
 
 model Meal {
-  id        String   @id @default(cuid())
-  userId    String
-  date      DateTime @db.Date
-  mealType  MealType
-  createdAt DateTime @default(now())
-
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  mealItems MealItem[]
-}
-
-model MealItem {
-  id              String  @id @default(cuid())
-  mealId          String
-  name            String
-  calories        Int
-  proteinG        Float
-  carbsG          Float
-  fatG            Float
-  quantity        Float
-  unit            String
-  openFoodFactsId String?
-
-  meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealType    MealType
+  date        DateTime @db.Date
+  time        String?
+  description String?
+  imageUrl    String
+  createdAt   DateTime @default(now())
 }
 
 model WaterIntake {

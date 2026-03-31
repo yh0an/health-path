@@ -1,66 +1,50 @@
 import { Response } from 'express';
-import { MealType } from '@prisma/client';
+import multer from 'multer';
 import prisma from '../lib/prisma';
-import { AuthRequest } from '../middleware/auth';
-import { searchProducts } from '../services/openfoodfacts.service';
+import type { AuthRequest } from '../middleware/auth';
+import { uploadFile, deleteFile } from '../services/storage.service';
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+export const uploadMiddleware = upload.single('image');
 
 export async function getMeals(req: AuthRequest, res: Response): Promise<void> {
   const { date } = req.query;
-  if (!date) { res.status(400).json({ error: 'date required' }); return; }
+  const where: Record<string, unknown> = { userId: req.userId! };
+  if (date) {
+    const d = new Date(date as string);
+    where.date = d;
+  }
   const meals = await prisma.meal.findMany({
-    where: { userId: req.userId!, date: new Date(date as string) },
-    include: { mealItems: true },
-    orderBy: { mealType: 'asc' },
+    where,
+    orderBy: [{ date: 'desc' }, { time: 'desc' }],
   });
   res.json(meals);
 }
 
-export async function addMealItem(req: AuthRequest, res: Response): Promise<void> {
-  const { date, mealType, name, calories, proteinG, carbsG, fatG, quantity, unit, openFoodFactsId } = req.body;
-  if (!date || !mealType || !name) {
-    res.status(400).json({ error: 'date, mealType, name are required' });
-    return;
-  }
-  const mealId = `${req.userId}_${date}_${mealType}`;
-  const meal = await prisma.meal.upsert({
-    where: { id: mealId },
-    update: {},
-    create: {
-      id: mealId,
-      userId: req.userId!,
-      date: new Date(date),
-      mealType: mealType as MealType,
-    },
-  });
-  const item = await prisma.mealItem.create({
+export async function createMeal(req: AuthRequest, res: Response): Promise<void> {
+  const file = req.file;
+  if (!file) { res.status(400).json({ error: 'Image manquante' }); return; }
+  const { mealType, date, time, description } = req.body;
+  if (!mealType || !date) { res.status(400).json({ error: 'mealType et date requis' }); return; }
+  const imageUrl = await uploadFile(file);
+  const meal = await prisma.meal.create({
     data: {
-      mealId: meal.id,
-      name,
-      calories: Number(calories),
-      proteinG: Number(proteinG || 0),
-      carbsG: Number(carbsG || 0),
-      fatG: Number(fatG || 0),
-      quantity: Number(quantity || 100),
-      unit: unit || 'g',
-      openFoodFactsId: openFoodFactsId || null,
+      userId: req.userId!,
+      mealType,
+      date: new Date(date),
+      time: time || null,
+      description: description || null,
+      imageUrl,
     },
   });
-  res.status(201).json(item);
+  res.status(201).json(meal);
 }
 
-export async function deleteMealItem(req: AuthRequest, res: Response): Promise<void> {
-  const id = String(req.params.id);
-  const item = await prisma.mealItem.findFirst({
-    where: { id, meal: { userId: req.userId! } },
-  });
-  if (!item) { res.status(404).json({ error: 'Not found' }); return; }
-  await prisma.mealItem.delete({ where: { id } });
-  res.status(204).send();
-}
-
-export async function searchFood(req: AuthRequest, res: Response): Promise<void> {
-  const { q } = req.query;
-  if (!q) { res.status(400).json({ error: 'q required' }); return; }
-  const results = await searchProducts(q as string);
-  res.json(results);
+export async function deleteMeal(req: AuthRequest, res: Response): Promise<void> {
+  const { id } = req.params;
+  const meal = await prisma.meal.findFirst({ where: { id: id as string, userId: req.userId! } });
+  if (!meal) { res.status(404).json({ error: 'Non trouvé' }); return; }
+  await deleteFile(meal.imageUrl);
+  await prisma.meal.delete({ where: { id: id as string } });
+  res.status(204).end();
 }

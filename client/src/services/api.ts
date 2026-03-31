@@ -1,4 +1,4 @@
-const BASE = 'http://localhost:3001/api';
+const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:4800/api';
 
 function getToken(): string | null {
   return localStorage.getItem('hp_token');
@@ -56,11 +56,16 @@ export const weightApi = {
 
 // Nutrition
 export const nutritionApi = {
-  getMeals: (date: string) => request<Meal[]>(`/nutrition?date=${date}`),
-  searchFood: (q: string) => request<OFFProduct[]>(`/nutrition/search?q=${encodeURIComponent(q)}`),
-  addItem: (data: AddMealItemPayload) =>
-    request<MealItem>('/nutrition/items', { method: 'POST', body: JSON.stringify(data) }),
-  deleteItem: (id: string) => request<void>(`/nutrition/items/${id}`, { method: 'DELETE' }),
+  getMeals: (date?: string) => request<Meal[]>(`/nutrition${date ? '?date=' + date : ''}`),
+  upload: (formData: FormData) => {
+    const token = getToken();
+    return fetch(`${BASE}/nutrition`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    }).then((r) => r.json()) as Promise<Meal>;
+  },
+  delete: (id: string) => request<void>(`/nutrition/${id}`, { method: 'DELETE' }),
 };
 
 // Water
@@ -133,11 +138,16 @@ export interface NotificationSettings {
   eventReminderMinutesBefore: number;
 }
 export interface WeightEntry { id: string; weightKg: number; date: string; notes: string | null; createdAt: string; }
-export interface Meal { id: string; mealType: string; date: string; mealItems: MealItem[]; }
-export interface MealItem { id: string; mealId: string; name: string; calories: number; proteinG: number; carbsG: number; fatG: number; quantity: number; unit: string; }
-export interface OFFProduct { id: string; name: string; brand: string; calories: number; proteinG: number; carbsG: number; fatG: number; }
+export interface Meal {
+  id: string;
+  mealType: 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK';
+  date: string;
+  time: string | null;
+  description: string | null;
+  imageUrl: string;
+  createdAt: string;
+}
 export interface WaterIntake { id: string; amountMl: number; date: string; createdAt: string; }
 export interface ProgressPhoto { id: string; date: string; category: 'FRONT' | 'SIDE' | 'BACK'; imagePath: string; notes: string | null; createdAt: string; }
 export interface CalendarEvent { id: string; title: string; description: string | null; date: string; endDate: string | null; eventType: 'MEDICAL' | 'SPORT' | 'OTHER'; sportType: string | null; isRecurring: boolean; completed: boolean; }
-export interface AddMealItemPayload { date: string; mealType: string; name: string; calories: number; proteinG: number; carbsG: number; fatG: number; quantity: number; unit: string; openFoodFactsId?: string; }
 export interface CreateEventPayload { title: string; date: string; eventType: string; description?: string; endDate?: string; sportType?: string; isRecurring?: boolean; recurrenceRule?: string; }

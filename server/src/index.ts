@@ -18,7 +18,7 @@ import { initWebPush, startCronJobs } from './services/push.service';
 // Pour l'instant, on crée des placeholders qui seront remplacés
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 4800;
 
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());

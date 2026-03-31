@@ -10,6 +10,46 @@ services:
       - '5435:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U healthpath']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build: ./server
+    restart: unless-stopped
+    ports:
+      - '4800:4800'
+    environment:
+      DATABASE_URL: postgresql://healthpath:healthpath_secret@db:5432/healthpath
+      JWT_SECRET: dev_jwt_secret_change_in_production_at_least_64_chars_long
+      JWT_EXPIRES_IN: 7d
+      PORT: 4800
+      CLIENT_URL: http://localhost:5373
+      UPLOADS_DIR: /app/uploads
+      VAPID_EMAIL: mailto:admin@healthpath.fr
+      VAPID_PUBLIC_KEY: BI-8cfMZb_2Aiudiy-LqPuvKlOiQcAkFzKn8GsKvNBWMIbqMbJV7y-HIWTMp1AnNC0Tqd9tq2MrPu1CKxuGh0RE
+      VAPID_PRIVATE_KEY: W7XF7WSJALCNPEXGJSbXZzYFopj_WUROw5kHkjzOEIc
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:-}
+      R2_PUBLIC_URL: ${R2_PUBLIC_URL:-}
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+  client:
+    build: ./client
+    restart: unless-stopped
+    ports:
+      - '5373:5373'
+    depends_on:
+      - server
 
 volumes:
   postgres_data:
+  uploads_data:

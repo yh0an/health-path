@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { settingsApi, UserProfile } from '../services/api';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import { settingsApi } from '../services/api';
+import type { UserProfile } from '../services/api';
 import { authApi } from '../services/api';
 
 interface AuthContextValue {
