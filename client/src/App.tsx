@@ -1,24 +1,20 @@
+// client/src/App.tsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Layout } from './components/Layout';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
-import { DashboardPage } from './pages/DashboardPage';
-import { WeightPage } from './pages/WeightPage';
-import { NutritionPage } from './pages/NutritionPage';
-import { WaterPage } from './pages/WaterPage';
-import { HealthPage } from './pages/HealthPage';
-import { PhotosPage } from './pages/PhotosPage';
-import { SuiviPage } from './pages/SuiviPage';
-import { CalendarPage } from './pages/CalendarPage';
+import { TodayPage } from './pages/TodayPage';
+import { TrendsPage } from './pages/TrendsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { PhotosPage } from './pages/PhotosPage';
 import { Skeleton } from './components/Skeleton';
 
 function ProtectedRoutes() {
   const { token, isLoading } = useAuth();
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-bg">
         <Skeleton className="w-32 h-8" />
       </div>
     );
@@ -27,14 +23,9 @@ function ProtectedRoutes() {
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/weight" element={<WeightPage />} />
-        <Route path="/suivi" element={<SuiviPage />} />
-        <Route path="/health" element={<HealthPage />} />
-        <Route path="/nutrition" element={<NutritionPage />} />
-        <Route path="/water" element={<WaterPage />} />
+        <Route path="/" element={<TodayPage />} />
+        <Route path="/trends" element={<TrendsPage />} />
         <Route path="/photos" element={<PhotosPage />} />
-        <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </Layout>
