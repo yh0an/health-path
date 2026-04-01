@@ -10,7 +10,7 @@ import { useToast } from '../hooks/useToast';
 
 // ─── Shared input style ───────────────────────────────────────────────────────
 const inputClass =
-  'w-full rounded-xl border border-gray-200 bg-surface px-3 py-2.5 text-label text-base focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-60';
+  'w-full rounded-xl border border-surface2 bg-surface2 px-3 py-2.5 text-label text-base focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-60';
 
 // ─── Toggle component ─────────────────────────────────────────────────────────
 interface ToggleProps {
@@ -29,7 +29,7 @@ function Toggle({ checked, onChange, label }: ToggleProps) {
         aria-checked={checked}
         onClick={() => onChange(!checked)}
         className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${
-          checked ? 'bg-accent' : 'bg-gray-300'
+          checked ? 'bg-accent' : 'bg-surface2'
         }`}
       >
         <span
@@ -235,10 +235,10 @@ export function SettingsPage() {
 
       {/* ── Section 1: Profil ── */}
       <Card>
-        <h2 className="text-lg font-semibold text-label mb-4">Profil</h2>
+        <h2 className="text-sm font-bold text-accent uppercase tracking-widest mb-4">Profil</h2>
         <div className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Nom</label>
+            <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>Nom</label>
             <input
               type="text"
               value={name}
@@ -247,7 +247,7 @@ export function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Email</label>
+            <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>Email</label>
             <input
               type="text"
               value={email}
@@ -256,7 +256,7 @@ export function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Taille (cm)</label>
+            <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>Taille (cm)</label>
             <input
               type="number"
               value={heightCm}
@@ -266,7 +266,7 @@ export function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Poids objectif (kg)</label>
+            <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>Poids objectif (kg)</label>
             <input
               type="number"
               value={targetWeightKg}
@@ -286,10 +286,10 @@ export function SettingsPage() {
 
       {/* ── Section 2: Objectifs nutritionnels ── */}
       <Card>
-        <h2 className="text-lg font-semibold text-label mb-4">Objectifs nutritionnels</h2>
+        <h2 className="text-sm font-bold text-accent uppercase tracking-widest mb-4">Objectifs nutritionnels</h2>
         <div className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Calories</label>
+            <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>Calories</label>
             <input
               type="number"
               value={calorieGoal}
@@ -299,7 +299,7 @@ export function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Protéines %</label>
+            <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>Protéines %</label>
             <input
               type="number"
               value={proteinGoalPct}
@@ -310,7 +310,7 @@ export function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Glucides %</label>
+            <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>Glucides %</label>
             <input
               type="number"
               value={carbsGoalPct}
@@ -321,7 +321,7 @@ export function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Lipides %</label>
+            <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>Lipides %</label>
             <input
               type="number"
               value={fatGoalPct}
@@ -332,7 +332,7 @@ export function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Eau (ml)</label>
+            <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>Eau (ml)</label>
             <input
               type="number"
               value={waterGoalMl}
@@ -342,7 +342,7 @@ export function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Jour de pesée</label>
+            <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>Jour de pesée</label>
             <select
               value={weighDay}
               onChange={(e) => setWeighDay(Number(e.target.value))}
@@ -371,7 +371,7 @@ export function SettingsPage() {
 
       {/* ── Section 3: Notifications ── */}
       <Card>
-        <h2 className="text-lg font-semibold text-label mb-4">Notifications</h2>
+        <h2 className="text-sm font-bold text-accent uppercase tracking-widest mb-4">Notifications</h2>
         <div className="space-y-5">
           {/* Water reminders */}
           <div className="space-y-2">
@@ -382,7 +382,7 @@ export function SettingsPage() {
             />
             {waterReminderEnabled && (
               <div>
-                <label className="block text-sm font-medium text-secondary mb-1">
+                <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>
                   Intervalle (minutes)
                 </label>
                 <input
@@ -396,7 +396,7 @@ export function SettingsPage() {
             )}
           </div>
 
-          <div className="h-px bg-gray-100" />
+          <div className="h-px bg-surface2" />
 
           {/* Photo reminders */}
           <div className="space-y-2">
@@ -407,7 +407,7 @@ export function SettingsPage() {
             />
             {photoReminderEnabled && (
               <div>
-                <label className="block text-sm font-medium text-secondary mb-1">
+                <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>
                   Intervalle (jours)
                 </label>
                 <input
@@ -421,7 +421,7 @@ export function SettingsPage() {
             )}
           </div>
 
-          <div className="h-px bg-gray-100" />
+          <div className="h-px bg-surface2" />
 
           {/* Event reminders */}
           <div className="space-y-2">
@@ -432,7 +432,7 @@ export function SettingsPage() {
             />
             {eventReminderEnabled && (
               <div>
-                <label className="block text-sm font-medium text-secondary mb-1">
+                <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>
                   Minutes avant
                 </label>
                 <input
@@ -449,7 +449,7 @@ export function SettingsPage() {
           {/* Enable push button */}
           {'serviceWorker' in navigator && !pushEnabled && (
             <>
-              <div className="h-px bg-gray-100" />
+              <div className="h-px bg-surface2" />
               <Button
                 variant="secondary"
                 onClick={handleEnablePush}
@@ -471,10 +471,10 @@ export function SettingsPage() {
 
       {/* ── Section 4: Sécurité ── */}
       <Card>
-        <h2 className="text-lg font-semibold text-label mb-4">Sécurité</h2>
+        <h2 className="text-sm font-bold text-accent uppercase tracking-widest mb-4">Sécurité</h2>
         <div className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Mot de passe actuel</label>
+            <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>Mot de passe actuel</label>
             <input
               type="password"
               value={currentPassword}
@@ -484,7 +484,7 @@ export function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Nouveau mot de passe</label>
+            <label className="block text-xs font-medium text-secondary mb-1" style={{ color: '#888' }}>Nouveau mot de passe</label>
             <input
               type="password"
               value={newPassword}
