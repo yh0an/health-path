@@ -2,7 +2,6 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Button } from '../components/Button';
 
 export function RegisterPage() {
   const { register } = useAuth();
@@ -36,6 +35,13 @@ export function RegisterPage() {
     }
   };
 
+  const inputStyle = {
+    width: '100%', padding: '14px 16px', borderRadius: 14,
+    background: '#1c1c1c', border: '1px solid #2e2e2e',
+    color: '#fff', fontSize: 15, outline: 'none',
+    boxSizing: 'border-box' as const,
+  };
+
   const fields: { key: keyof typeof form; label: string; type: string; required: boolean }[] = [
     { key: 'name', label: 'Nom', type: 'text', required: true },
     { key: 'email', label: 'Email', type: 'email', required: true },
@@ -45,26 +51,33 @@ export function RegisterPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-white">
-      <div className="w-full max-w-sm">
-        <h1 className="text-3xl font-bold text-label mb-2">Créer un compte</h1>
-        <p className="text-secondary mb-8">Commence ton suivi aujourd'hui</p>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <div style={{ minHeight: '100vh', background: '#0a0a0a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px' }}>
+      <div style={{ width: '100%', maxWidth: 360 }}>
+        <div style={{ marginBottom: 32 }}>
+          <div style={{ fontSize: 28, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>Créer un compte</div>
+          <div style={{ fontSize: 13, color: '#555', marginTop: 4 }}>Commence ton suivi aujourd'hui</div>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {fields.map(({ key, label, type, required }) => (
             <input
               key={key} type={type} placeholder={label}
               value={form[key]} onChange={set(key)} required={required}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-accent text-label"
+              style={inputStyle}
             />
           ))}
-          {error && <p className="text-danger text-sm">{error}</p>}
-          <Button type="submit" disabled={loading} size="lg" className="w-full">
+          {error && <div style={{ fontSize: 13, color: '#f87171' }}>{error}</div>}
+          <button
+            type="submit" disabled={loading}
+            style={{ marginTop: 4, padding: '15px', borderRadius: 14, background: '#d4a843', border: 'none', color: '#000', fontSize: 15, fontWeight: 800, cursor: loading ? 'default' : 'pointer', opacity: loading ? 0.6 : 1 }}
+          >
             {loading ? 'Création...' : 'Créer mon compte'}
-          </Button>
+          </button>
         </form>
-        <p className="text-center text-secondary mt-6">
+
+        <p style={{ textAlign: 'center', color: '#555', fontSize: 13, marginTop: 24 }}>
           Déjà un compte ?{' '}
-          <Link to="/login" className="text-accent font-medium">Se connecter</Link>
+          <Link to="/login" style={{ color: '#d4a843', fontWeight: 700, textDecoration: 'none' }}>Se connecter</Link>
         </p>
       </div>
     </div>
