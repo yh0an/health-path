@@ -19,6 +19,7 @@ model User {
   carbsGoalPct   Int      @default(40)
   fatGoalPct     Int      @default(30)
   waterGoalMl    Int      @default(2000)
+  weighDay       Int      @default(1)
   wakeHour       Int      @default(8)
   sleepHour      Int      @default(22)
   createdAt      DateTime @default(now())
@@ -53,15 +54,25 @@ enum MealType {
 }
 
 model Meal {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  mealType    MealType
-  date        DateTime @db.Date
-  time        String?
-  description String?
-  imageUrl    String
-  createdAt   DateTime @default(now())
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealType      MealType
+  date          DateTime    @db.Date
+  time          String?
+  description   String?
+  imageUrl      String?
+  estimatedKcal Int?
+  createdAt     DateTime    @default(now())
+  photos        MealPhoto[]
+}
+
+model MealPhoto {
+  id       String @id @default(cuid())
+  mealId   String
+  meal     Meal   @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  imageUrl String
+  order    Int    @default(0)
 }
 
 model WaterIntake {
