@@ -52,7 +52,7 @@ accessories:
   postgres:
     image: postgres:15-alpine
     host: 88.223.94.148
-    port: "127.0.0.1:5436:5432"
+    port: "127.0.0.1:5438:5432"
     options:
       network: health-path
     env:
