@@ -36,6 +36,8 @@ type Step = 'type' | 'photos' | 'analyzing' | 'confirm';
 export function MealAddSheet({ onClose, onAdded, onToast }: MealAddSheetProps) {
   const [step, setStep] = useState<Step>('type');
   const [mealType, setMealType] = useState<MealType>(guessType());
+  const [date, setDate] = useState(todayStr());
+  const [time, setTime] = useState(nowTime());
   const [photos, setPhotos] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [estimatedKcal, setEstimatedKcal] = useState<number | null>(null);
@@ -80,8 +82,8 @@ export function MealAddSheet({ onClose, onAdded, onToast }: MealAddSheetProps) {
       const fd = new FormData();
       photos.forEach(f => fd.append('images', f));
       fd.append('mealType', mealType);
-      fd.append('date', todayStr());
-      fd.append('time', nowTime());
+      fd.append('date', date);
+      fd.append('time', time);
       if (description.trim()) fd.append('description', description.trim());
       if (estimatedKcal !== null) fd.append('estimatedKcal', String(estimatedKcal));
       await nutritionApi.upload(fd);
@@ -109,15 +111,24 @@ export function MealAddSheet({ onClose, onAdded, onToast }: MealAddSheetProps) {
     transition: 'all 0.15s',
   });
 
+  const inputStyle: CSSProperties = {
+    flex: 1, background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10,
+    padding: '10px 12px', color: '#f0f0f0', fontSize: 13, outline: 'none', width: '100%', boxSizing: 'border-box',
+  };
+
   if (step === 'type') return (
     <div style={{ padding: '0 16px 16px' }}>
       <h2 style={{ fontSize: 16, fontWeight: 800, color: '#f0f0f0', marginBottom: 16 }}>Quel repas ?</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
         {MEAL_TYPES.map(t => (
           <button key={t} onClick={() => setMealType(t)} style={btnStyle(mealType === t)}>
             {MEAL_LABELS[t]}
           </button>
         ))}
+      </div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <input type="date" value={date} onChange={e => setDate(e.target.value)} style={inputStyle} />
+        <input type="time" value={time} onChange={e => setTime(e.target.value)} style={{ ...inputStyle, flex: '0 0 auto', width: 100 }} />
       </div>
       <button
         onClick={() => setStep('photos')}
