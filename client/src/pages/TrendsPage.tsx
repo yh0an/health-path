@@ -1,6 +1,7 @@
 // client/src/pages/TrendsPage.tsx
 import { useState, useEffect } from 'react';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar } from 'recharts';
+import { useNavigate } from 'react-router-dom';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell } from 'recharts';
 import { weightApi, waterApi, nutritionApi, streaksApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { Skeleton } from '../components/Skeleton';
@@ -17,6 +18,7 @@ function daysAgo(n: number) {
 
 export function TrendsPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [period, setPeriod] = useState<Period>('30d');
   const [loading, setLoading] = useState(true);
   const [weightData, setWeightData] = useState<{ date: string; poids: number }[]>([]);
@@ -222,13 +224,45 @@ export function TrendsPage() {
                 contentStyle={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, fontSize: 12, color: '#f0f0f0' }}
                 formatter={(v: unknown) => [`${v} kcal`, 'Calories']}
               />
-              <Bar dataKey="kcal" radius={[4, 4, 0, 0]} fill="#d4a843" />
+              <Bar dataKey="kcal" radius={[4, 4, 0, 0]}>
+                {calorieData.map((entry, index) => (
+                  <Cell key={index} fill={entry.kcal === 0 ? '#2a2a2a' : entry.kcal > calorieGoal ? '#f87171' : '#4ade80'} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         )}
         <div style={{ fontSize: 11, color: '#2a2a2a', marginTop: 8 }}>
           Plafond : {calorieGoal} kcal/j
         </div>
+      </div>
+
+      {/* Photos d'évolution */}
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: 1 }}>Photos d'évolution</div>
+        </div>
+        <button
+          onClick={() => navigate('/photos')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: '#1a1a1a',
+            border: '1px solid #2a2a2a',
+            borderRadius: 12,
+            padding: '14px 16px',
+            color: '#f0f0f0',
+            textDecoration: 'none',
+            fontSize: 13,
+            fontWeight: 700,
+            width: '100%',
+            cursor: 'pointer',
+          }}
+        >
+          <span>Voir mes photos de progression</span>
+          <span style={{ color: '#444', fontSize: 16 }}>→</span>
+        </button>
       </div>
     </div>
   );

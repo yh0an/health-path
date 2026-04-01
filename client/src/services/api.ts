@@ -63,7 +63,10 @@ export const nutritionApi = {
       method: 'POST',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,
-    }).then(r => r.json()) as Promise<{ estimatedKcal: number; detectedItems: string[] }>;
+    }).then(async r => {
+      if (!r.ok) { const err = await r.json(); throw new Error(err.error ?? 'Erreur analyse'); }
+      return r.json() as Promise<{ estimatedKcal: number; detectedItems: string[] }>;
+    });
   },
   upload: (formData: FormData): Promise<Meal> => {
     const token = getToken();
@@ -71,7 +74,10 @@ export const nutritionApi = {
       method: 'POST',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,
-    }).then(r => r.json()) as Promise<Meal>;
+    }).then(async r => {
+      if (!r.ok) { const err = await r.json(); throw new Error(err.error ?? 'Erreur upload'); }
+      return r.json() as Promise<Meal>;
+    });
   },
   delete: (id: string) => request<void>(`/nutrition/${id}`, { method: 'DELETE' }),
 };

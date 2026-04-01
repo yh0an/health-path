@@ -128,7 +128,7 @@ export async function getStreaks(req: AuthRequest, res: Response): Promise<void>
       const total = entry?._sum.estimatedKcal ?? 0;
       if (total > 0 && total <= calorieGoal) {
         calorieStreak++;
-      } else if (i > 0) {
+      } else {
         break;
       }
     }
