@@ -1,0 +1,65 @@
+service: health-path
+image: yh0an/health-path
+
+servers:
+  web:
+    hosts:
+      - 88.223.94.148
+    labels:
+      traefik.http.routers.health_path.entrypoints: websecure
+      traefik.http.routers.health_path.rule: Host(`health-path.fr`) || Host(`www.health-path.fr`)
+      traefik.http.routers.health_path.tls.certresolver: letsencrypt
+    options:
+      network: health-path
+
+proxy:
+  ssl: true
+  hosts:
+    - health-path.fr
+    - www.health-path.fr
+  app_port: 4800
+  healthcheck:
+    path: /api/health
+
+builder:
+  arch: amd64
+
+registry:
+  server: ghcr.io
+  username: yh0an
+  password:
+    - GITHUB_REGISTRY_TOKEN
+
+env:
+  clear:
+    PORT: 4800
+    NODE_ENV: production
+    CLIENT_URL: https://health-path.fr
+    JWT_EXPIRES_IN: 7d
+    VAPID_EMAIL: mailto:admin@healthpath.fr
+  secret:
+    - DATABASE_URL
+    - JWT_SECRET
+    - VAPID_PUBLIC_KEY
+    - VAPID_PRIVATE_KEY
+    - R2_ACCOUNT_ID
+    - R2_ACCESS_KEY_ID
+    - R2_SECRET_ACCESS_KEY
+    - R2_BUCKET_NAME
+    - R2_PUBLIC_URL
+
+accessories:
+  postgres:
+    image: postgres:15-alpine
+    host: 88.223.94.148
+    port: "127.0.0.1:5436:5432"
+    options:
+      network: health-path
+    env:
+      clear:
+        POSTGRES_USER: healthpath
+        POSTGRES_DB: healthpath_production
+      secret:
+        - POSTGRES_PASSWORD
+    volumes:
+      - health_path_postgres:/var/lib/postgresql/data
