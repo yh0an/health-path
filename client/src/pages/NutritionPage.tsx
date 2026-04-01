@@ -164,7 +164,7 @@ export function NutritionPage() {
           <div className="flex flex-col items-center justify-center py-20 text-secondary">
             <span className="text-5xl mb-4">🍽️</span>
             <p className="text-base font-medium">Aucun repas enregistré ce jour</p>
-            <p className="text-sm mt-1">Appuyez sur le bouton 📷 pour ajouter</p>
+            <p className="text-sm mt-1">Utilisez le bouton ci-dessous pour ajouter votre premier repas</p>
           </div>
         ) : (
           MEAL_TYPES.map((type) => {
@@ -219,16 +219,18 @@ export function NutritionPage() {
           })
         )}
         {/* Inline add card */}
-        <button
-          onClick={openModal}
-          className="w-full flex items-center gap-3 bg-white rounded-card p-3 border border-dashed border-accent active:scale-[0.98] transition-transform"
-          aria-label="Ajouter un repas"
-        >
-          <div className="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center text-accent text-xl font-light">
-            +
-          </div>
-          <span className="text-sm font-semibold text-accent">Ajouter un repas</span>
-        </button>
+        {!loading && (
+          <button
+            onClick={openModal}
+            className="w-full flex items-center gap-3 bg-white rounded-card p-3 border border-dashed border-accent active:scale-[0.98] transition-transform"
+            aria-label="Ajouter un repas"
+          >
+            <div className="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center text-accent text-xl font-light">
+              +
+            </div>
+            <span className="text-sm font-semibold text-accent">Ajouter un repas</span>
+          </button>
+        )}
       </div>
 
       {/* Bottom sheet modal */}
