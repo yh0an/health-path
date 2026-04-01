@@ -116,12 +116,9 @@ export function TodayPage() {
 
   const todayMealTypes = meals.map(m => m.mealType);
 
-  // Pending hints
+  // Pending hints — uniquement la pesée si c'est le jour configuré
   const pendingItems: string[] = [];
   if (showWeighRing && !todayWeight) pendingItems.push('Pesée non réalisée');
-  const h = new Date().getHours();
-  if (h >= 10 && !todayMealTypes.includes('BREAKFAST')) pendingItems.push('Petit-déjeuner non loggé');
-  if (h >= 14 && !todayMealTypes.includes('LUNCH')) pendingItems.push('Déjeuner non loggé');
 
   const userName = user?.name ?? '';
 
