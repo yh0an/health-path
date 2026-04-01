@@ -14,13 +14,14 @@ function todayStr() { return new Date().toISOString().slice(0, 10); }
 
 export function WaterAddSheet({ onClose, onAdded, onToast }: WaterAddSheetProps) {
   const [custom, setCustom] = useState('');
+  const [date, setDate] = useState(todayStr());
   const [adding, setAdding] = useState(false);
 
   async function add(amount: number) {
     if (adding) return;
     setAdding(true);
     try {
-      await waterApi.add({ amountMl: amount, date: todayStr() });
+      await waterApi.add({ amountMl: amount, date });
       onAdded();
       onClose();
       onToast(`+${amount} ml ajouté`, 'success');
@@ -34,6 +35,10 @@ export function WaterAddSheet({ onClose, onAdded, onToast }: WaterAddSheetProps)
   return (
     <div style={{ padding: '0 16px 16px' }}>
       <h2 style={{ fontSize: 16, fontWeight: 800, color: '#f0f0f0', marginBottom: 16 }}>Ajouter de l'eau</h2>
+      <input
+        type="date" value={date} onChange={e => setDate(e.target.value)}
+        style={{ width: '100%', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '10px 12px', color: '#f0f0f0', fontSize: 13, outline: 'none', marginBottom: 12, boxSizing: 'border-box' as const, colorScheme: 'dark' as const }}
+      />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
         {QUICK.map(amount => (
           <button
