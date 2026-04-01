@@ -21,7 +21,7 @@ function formatTime(iso: string): string {
 
 function DotLine({ color, hasLine }: { color: string; hasLine: boolean }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 12, flexShrink: 0, width: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 12, flexShrink: 0, width: 16, marginBottom: hasLine ? -10 : 0, paddingBottom: hasLine ? 10 : 0 }}>
       <div style={{ width: 9, height: 9, borderRadius: '50%', background: color, flexShrink: 0, boxShadow: `0 0 8px ${color}99` }} />
       {hasLine && <div style={{ width: 1, background: '#383838', flex: 1, marginTop: 4, minHeight: 24 }} />}
     </div>
