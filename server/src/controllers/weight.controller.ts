@@ -54,3 +54,87 @@ export async function deleteEntry(req: AuthRequest, res: Response): Promise<void
   await prisma.weightEntry.delete({ where: { id } });
   res.status(204).send();
 }
+
+export async function getStreaks(req: AuthRequest, res: Response): Promise<void> {
+  try {
+    const userId = req.userId!;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { waterGoalMl: true, calorieGoal: true, weighDay: true },
+    });
+    const waterGoal = user?.waterGoalMl ?? 2000;
+    const calorieGoal = user?.calorieGoal ?? 2000;
+    const weighDay = user?.weighDay ?? 1;
+
+    // Water streak: count consecutive days (starting today) with waterGoal met
+    const waterHistory = await prisma.waterIntake.groupBy({
+      by: ['date'],
+      where: { userId },
+      _sum: { amountMl: true },
+      orderBy: { date: 'desc' },
+    });
+
+    let waterStreak = 0;
+    for (let i = 0; i < 60; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().split('T')[0];
+      const entry = waterHistory.find(h => new Date(h.date).toISOString().split('T')[0] === key);
+      if (entry && (entry._sum.amountMl ?? 0) >= waterGoal) {
+        waterStreak++;
+      } else if (i > 0) {
+        break;
+      }
+    }
+
+    // Weight streak: count consecutive weeks where weighDay entry exists
+    const weightEntries = await prisma.weightEntry.findMany({
+      where: { userId },
+      orderBy: { date: 'desc' },
+      take: 52,
+      select: { date: true },
+    });
+    const weightDates = new Set(weightEntries.map(e => new Date(e.date).toISOString().split('T')[0]));
+
+    let weightStreak = 0;
+    for (let week = 0; week < 52; week++) {
+      const target = new Date(today);
+      const dayOffset = (today.getDay() - weighDay + 7) % 7;
+      target.setDate(today.getDate() - dayOffset - week * 7);
+      if (weightDates.has(target.toISOString().split('T')[0])) {
+        weightStreak++;
+      } else if (week > 0) {
+        break;
+      }
+    }
+
+    // Calorie streak: consecutive days under calorieGoal with at least one logged meal
+    const mealHistory = await prisma.meal.groupBy({
+      by: ['date'],
+      where: { userId, estimatedKcal: { not: null } },
+      _sum: { estimatedKcal: true },
+      orderBy: { date: 'desc' },
+    });
+
+    let calorieStreak = 0;
+    for (let i = 0; i < 60; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().split('T')[0];
+      const entry = mealHistory.find(h => new Date(h.date).toISOString().split('T')[0] === key);
+      const total = entry?._sum.estimatedKcal ?? 0;
+      if (total > 0 && total <= calorieGoal) {
+        calorieStreak++;
+      } else if (i > 0) {
+        break;
+      }
+    }
+
+    res.json({ waterStreak, weightStreak, calorieStreak });
+  } catch {
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+}
