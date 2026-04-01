@@ -22,8 +22,8 @@ function formatTime(iso: string): string {
 function DotLine({ color, hasLine }: { color: string; hasLine: boolean }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 12, flexShrink: 0, width: 16 }}>
-      <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0, boxShadow: `0 0 6px ${color}88` }} />
-      {hasLine && <div style={{ width: 1, background: '#2a2a2a', flex: 1, marginTop: 4, minHeight: 24 }} />}
+      <div style={{ width: 9, height: 9, borderRadius: '50%', background: color, flexShrink: 0, boxShadow: `0 0 8px ${color}99` }} />
+      {hasLine && <div style={{ width: 1, background: '#383838', flex: 1, marginTop: 4, minHeight: 24 }} />}
     </div>
   );
 }
@@ -32,7 +32,7 @@ function DeleteBtn({ onDelete }: { onDelete: () => void }) {
   return (
     <button
       onClick={onDelete}
-      style={{ color: '#555', fontSize: 20, lineHeight: 1, background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px' }}
+      style={{ color: '#666', fontSize: 20, lineHeight: 1, background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px' }}
       aria-label="Supprimer"
     >
       ×
@@ -40,13 +40,21 @@ function DeleteBtn({ onDelete }: { onDelete: () => void }) {
   );
 }
 
+const cardBase: React.CSSProperties = {
+  flex: 1,
+  background: '#1c1c1c',
+  borderRadius: 14,
+  padding: '11px 14px',
+  border: '1px solid #2e2e2e',
+};
+
 function WeightCard({ entry, heightCm, targetWeightKg, onDelete }: {
   entry: WeightEntry; heightCm: number | null; targetWeightKg: number | null; onDelete: () => void;
 }) {
   const bmi = heightCm ? entry.weightKg / Math.pow(heightCm / 100, 2) : null;
   const diff = targetWeightKg !== null ? entry.weightKg - targetWeightKg : null;
   return (
-    <div style={{ flex: 1, background: '#141414', borderRadius: 14, padding: '10px 13px', border: '1px solid #252525', borderLeft: '3px solid #4ade80' }}>
+    <div style={{ ...cardBase, borderLeft: '3px solid #4ade80' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: '#4ade80', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Pesée</span>
         <DeleteBtn onDelete={onDelete} />
@@ -54,10 +62,12 @@ function WeightCard({ entry, heightCm, targetWeightKg, onDelete }: {
       <div style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: -0.5, marginTop: 2 }}>
         {entry.weightKg} kg
       </div>
-      <div style={{ fontSize: 11, color: '#777', marginTop: 2 }}>
-        {bmi !== null && `IMC ${bmi.toFixed(1)}`}
-        {diff !== null && ` · ${diff >= 0 ? '+' : ''}${diff.toFixed(1)} kg vs objectif`}
-      </div>
+      {(bmi !== null || diff !== null) && (
+        <div style={{ fontSize: 12, color: '#aaa', marginTop: 3 }}>
+          {bmi !== null && `IMC ${bmi.toFixed(1)}`}
+          {diff !== null && ` · ${diff >= 0 ? '+' : ''}${diff.toFixed(1)} kg vs objectif`}
+        </div>
+      )}
     </div>
   );
 }
@@ -68,7 +78,7 @@ function MealCard({ meal, onDelete }: { meal: Meal; onDelete: () => void }) {
   const allPhotos = photos.length > 0 ? photos.map(p => p.imageUrl) : (legacyUrl ? [legacyUrl] : []);
 
   return (
-    <div style={{ flex: 1, background: '#141414', borderRadius: 14, padding: '10px 13px', border: '1px solid #252525', borderLeft: '3px solid #f59e0b' }}>
+    <div style={{ ...cardBase, borderLeft: '3px solid #f59e0b' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{MEAL_LABELS[meal.mealType]}</span>
         <DeleteBtn onDelete={onDelete} />
@@ -85,16 +95,17 @@ function MealCard({ meal, onDelete }: { meal: Meal; onDelete: () => void }) {
           ))}
         </div>
       )}
-      {meal.estimatedKcal !== null && (
+      {meal.estimatedKcal !== null ? (
         <div style={{ marginTop: 6, fontSize: 18, fontWeight: 900, color: '#d4a843' }}>
           {meal.estimatedKcal} kcal
           {meal.description && (
-            <span style={{ fontSize: 11, color: '#888', fontWeight: 400, marginLeft: 6 }}>{meal.description}</span>
+            <span style={{ fontSize: 12, color: '#aaa', fontWeight: 400, marginLeft: 8 }}>{meal.description}</span>
           )}
         </div>
-      )}
-      {meal.estimatedKcal === null && !allPhotos.length && (
-        <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>Repas enregistré</div>
+      ) : (
+        <div style={{ fontSize: 12, color: '#aaa', marginTop: 4 }}>
+          {meal.description || 'Repas enregistré'}
+        </div>
       )}
     </div>
   );
@@ -105,7 +116,7 @@ function WaterCard({ entry, totalMl, goalMl, onDelete }: {
 }) {
   const pct = goalMl > 0 ? Math.min(1, totalMl / goalMl) : 0;
   return (
-    <div style={{ flex: 1, background: '#141414', borderRadius: 14, padding: '10px 13px', border: '1px solid #252525', borderLeft: '3px solid #0ea5e9' }}>
+    <div style={{ ...cardBase, borderLeft: '3px solid #0ea5e9' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: '#0ea5e9', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Eau</span>
         <DeleteBtn onDelete={onDelete} />
@@ -113,18 +124,18 @@ function WaterCard({ entry, totalMl, goalMl, onDelete }: {
       <div style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: -0.5, marginTop: 2 }}>
         +{entry.amountMl} ml
       </div>
-      <div style={{ height: 3, background: '#2a2a2a', borderRadius: 3, marginTop: 8, overflow: 'hidden' }}>
-        <div style={{ height: '100%', borderRadius: 3, background: '#0ea5e9', width: `${pct * 100}%` }} />
+      <div style={{ height: 4, background: '#333', borderRadius: 4, marginTop: 8, overflow: 'hidden' }}>
+        <div style={{ height: '100%', borderRadius: 4, background: '#0ea5e9', width: `${pct * 100}%` }} />
       </div>
-      <div style={{ fontSize: 11, color: '#0ea5e9aa', marginTop: 4 }}>{totalMl} ml / {goalMl} ml</div>
+      <div style={{ fontSize: 12, color: '#7cc8e8', marginTop: 4 }}>{totalMl} ml / {goalMl} ml</div>
     </div>
   );
 }
 
 function PendingCard({ label }: { label: string }) {
   return (
-    <div style={{ flex: 1, background: 'transparent', borderRadius: 14, padding: '10px 13px', border: '1px dashed #333' }}>
-      <div style={{ fontSize: 12, fontWeight: 600, color: '#666' }}>{label}</div>
+    <div style={{ flex: 1, background: 'transparent', borderRadius: 14, padding: '10px 13px', border: '1px dashed #3a3a3a' }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: '#888' }}>{label}</div>
     </div>
   );
 }
@@ -133,8 +144,8 @@ export function JournalEntry({ entry, hasLine }: { entry: EntryType; hasLine: bo
   if (entry.kind === 'pending') {
     return (
       <div style={{ display: 'flex', gap: 10, marginBottom: 8, alignItems: 'flex-start' }}>
-        <div style={{ fontSize: 10, color: '#555', width: 34, paddingTop: 12, flexShrink: 0 }}>—</div>
-        <DotLine color="#333" hasLine={false} />
+        <div style={{ fontSize: 10, color: '#666', width: 34, paddingTop: 12, flexShrink: 0 }}>—</div>
+        <DotLine color="#444" hasLine={false} />
         <PendingCard label={entry.label} />
       </div>
     );
@@ -159,8 +170,8 @@ export function JournalEntry({ entry, hasLine }: { entry: EntryType; hasLine: bo
   }
 
   return (
-    <div style={{ display: 'flex', gap: 10, marginBottom: 8, alignItems: 'flex-start' }}>
-      <div style={{ fontSize: 10, color: '#777', width: 34, paddingTop: 12, flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
+    <div style={{ display: 'flex', gap: 10, marginBottom: 10, alignItems: 'flex-start' }}>
+      <div style={{ fontSize: 11, color: '#aaa', width: 34, paddingTop: 12, flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
         {time}
       </div>
       <DotLine color={color} hasLine={hasLine} />
