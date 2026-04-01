@@ -148,21 +148,28 @@ export function TodayPage() {
         weighed={!!selectedWeight}
       />
 
-      <div style={{ padding: '16px 16px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {/* Date navigation — élément principal */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div style={{ padding: '16px 16px 0' }}>
+        {/* Greeting — une ligne discrète */}
+        {isToday && (
+          <div style={{ fontSize: 12, color: '#666', marginBottom: 6 }}>
+            Bonjour, <span style={{ color: '#d4a843', fontWeight: 700 }}>{userName}</span>
+          </div>
+        )}
+
+        {/* Date navigation — pleine largeur */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <button
             onClick={() => setSelectedDate(d => addDays(d, -1))}
-            style={{ width: 30, height: 30, borderRadius: 8, background: '#1c1c1c', border: '1px solid #2e2e2e', color: '#aaa', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}
+            style={{ width: 32, height: 32, borderRadius: 8, background: '#1c1c1c', border: '1px solid #2e2e2e', color: '#aaa', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
           >
             ‹
           </button>
-          <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', letterSpacing: -0.3 }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: '#fff', letterSpacing: -0.3 }}>
               {formatDateLabel(selectedDate)}
             </div>
             {!isToday && (
-              <div style={{ fontSize: 10, color: '#555', marginTop: 1 }}>
+              <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>
                 {new Date(selectedDate + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
               </div>
             )}
@@ -170,19 +177,11 @@ export function TodayPage() {
           <button
             onClick={() => setSelectedDate(d => addDays(d, 1))}
             disabled={isToday}
-            style={{ width: 30, height: 30, borderRadius: 8, background: '#1c1c1c', border: `1px solid ${isToday ? '#1c1c1c' : '#2e2e2e'}`, color: isToday ? '#2a2a2a' : '#aaa', fontSize: 16, cursor: isToday ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}
+            style={{ width: 32, height: 32, borderRadius: 8, background: '#1c1c1c', border: `1px solid ${isToday ? '#1c1c1c' : '#2e2e2e'}`, color: isToday ? '#2a2a2a' : '#aaa', fontSize: 18, cursor: isToday ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
           >
             ›
           </button>
         </div>
-
-        {/* Greeting — discret à droite */}
-        {isToday && (
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 11, color: '#555' }}>Bonjour</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#d4a843' }}>{userName}</div>
-          </div>
-        )}
       </div>
 
       <div style={{ padding: '24px 16px 120px' }}>
