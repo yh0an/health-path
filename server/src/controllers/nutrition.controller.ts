@@ -42,9 +42,15 @@ export async function createMeal(req: AuthRequest, res: Response): Promise<void>
 
 export async function deleteMeal(req: AuthRequest, res: Response): Promise<void> {
   const { id } = req.params;
-  const meal = await prisma.meal.findFirst({ where: { id: id as string, userId: req.userId! } });
+  const meal = await prisma.meal.findFirst({
+    where: { id: id as string, userId: req.userId! },
+    include: { photos: true },
+  });
   if (!meal) { res.status(404).json({ error: 'Non trouvé' }); return; }
   if (meal.imageUrl) await deleteFile(meal.imageUrl);
+  for (const photo of meal.photos) {
+    await deleteFile(photo.imageUrl);
+  }
   await prisma.meal.delete({ where: { id: id as string } });
   res.status(204).end();
 }
