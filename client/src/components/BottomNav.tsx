@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 
 const tabs = [
   { to: '/', label: 'Accueil', icon: '🏠' },
-  { to: '/weight', label: 'Poids', icon: '⚖️' },
+  { to: '/suivi', label: 'Suivi', icon: '📊' },
   { to: '/nutrition', label: 'Nutrition', icon: '🍽' },
   { to: '/water', label: 'Eau', icon: '💧' },
   { to: '/calendar', label: 'Agenda', icon: '📅' },
@@ -14,7 +14,7 @@ export function BottomNav() {
       className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 safe-bottom z-40"
       style={{ height: '64px' }}
     >
-      <div className="flex h-16 max-w-lg mx-auto">
+      <div className="flex h-16 w-full">
         {tabs.map((tab) => (
           <NavLink
             key={tab.to}

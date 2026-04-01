@@ -20,10 +20,10 @@ function getClient(): S3Client {
   });
 }
 
-export async function uploadFile(file: Express.Multer.File): Promise<string> {
+export async function uploadFile(file: Express.Multer.File, folder = 'meals'): Promise<string> {
   const client = getClient();
   const ext = path.extname(file.originalname);
-  const filename = `meals/${randomUUID()}${ext}`;
+  const filename = `${folder}/${randomUUID()}${ext}`;
   await client.send(new PutObjectCommand({
     Bucket: process.env.R2_BUCKET_NAME!,
     Key: filename,

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import type { WeightEntry } from '../services/api';
 import { weightApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -17,123 +18,49 @@ function toISODate(date: string | Date): string {
 
 // ─── Chart ───────────────────────────────────────────────────────────────────
 
-interface WeightChartProps {
-  entries: WeightEntry[];
-}
-
-function WeightChart({ entries }: WeightChartProps) {
-  const PADDING_LEFT = 44;
-  const PADDING_RIGHT = 8;
-  const PADDING_TOP = 12;
-  const PADDING_BOTTOM = 24;
-  const HEIGHT = 180;
-  const VIEW_WIDTH = 320; // reference width for viewBox
-
-  const plotW = VIEW_WIDTH - PADDING_LEFT - PADDING_RIGHT;
-  const plotH = HEIGHT - PADDING_TOP - PADDING_BOTTOM;
-
+function WeightChart({ entries }: { entries: WeightEntry[] }) {
   if (entries.length === 0) {
     return (
       <Card>
-        <div className="flex items-center justify-center" style={{ height: HEIGHT }}>
+        <div className="flex items-center justify-center h-44">
           <span className="text-secondary text-sm">Aucune donnée</span>
         </div>
       </Card>
     );
   }
 
-  const sorted = [...entries]
+  const data = [...entries]
     .sort((a, b) => toISODate(a.date).localeCompare(toISODate(b.date)))
-    .slice(-30);
+    .slice(-30)
+    .map(e => ({
+      date: new Date(toISODate(e.date) + 'T12:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+      poids: e.weightKg,
+    }));
 
-  const weights = sorted.map((e) => e.weightKg);
-  const minW = Math.min(...weights);
-  const maxW = Math.max(...weights);
-  const range = maxW - minW || 1;
-
-  const toX = (i: number) =>
-    PADDING_LEFT + (sorted.length > 1 ? (i / (sorted.length - 1)) * plotW : plotW / 2);
-
-  const toY = (w: number) =>
-    PADDING_TOP + plotH - ((w - minW) / range) * plotH;
-
-  const points = sorted.map((e, i) => `${toX(i)},${toY(e.weightKg)}`).join(' ');
-
-  const firstDate = new Date(toISODate(sorted[0].date) + 'T12:00:00').toLocaleDateString('fr-FR');
-  const lastDate = new Date(toISODate(sorted[sorted.length - 1].date) + 'T12:00:00').toLocaleDateString('fr-FR');
+  const weights = data.map(d => d.poids);
+  const minW = Math.floor(Math.min(...weights) - 1);
+  const maxW = Math.ceil(Math.max(...weights) + 1);
 
   return (
     <Card>
-      <svg
-        viewBox={`0 0 ${VIEW_WIDTH} ${HEIGHT}`}
-        width="100%"
-        height={HEIGHT}
-        aria-label="Courbe de poids"
-      >
-        {/* Min/Max labels */}
-        <text
-          x={PADDING_LEFT - 4}
-          y={PADDING_TOP + 4}
-          textAnchor="end"
-          fontSize={10}
-          fill="#86868B"
-        >
-          {maxW.toFixed(1)}
-        </text>
-        <text
-          x={PADDING_LEFT - 4}
-          y={PADDING_TOP + plotH}
-          textAnchor="end"
-          fontSize={10}
-          fill="#86868B"
-        >
-          {minW.toFixed(1)}
-        </text>
-
-        {/* Line */}
-        {sorted.length > 1 && (
-          <polyline
-            points={points}
-            stroke="#34C759"
-            strokeWidth={2}
-            fill="none"
-            strokeLinejoin="round"
-            strokeLinecap="round"
+      <ResponsiveContainer width="100%" height={200}>
+        <AreaChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+          <defs>
+            <linearGradient id="weightGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#34C759" stopOpacity={0.2} />
+              <stop offset="95%" stopColor="#34C759" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F7" vertical={false} />
+          <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#86868B' }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+          <YAxis domain={[minW, maxW]} tick={{ fontSize: 10, fill: '#86868B' }} tickLine={false} axisLine={false} tickCount={4} />
+          <Tooltip
+            contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', fontSize: 13 }}
+            formatter={(v: unknown) => [`${v} kg`, 'Poids']}
           />
-        )}
-
-        {/* Dots */}
-        {sorted.map((e, i) => (
-          <circle
-            key={e.id}
-            cx={toX(i)}
-            cy={toY(e.weightKg)}
-            r={3}
-            fill="#34C759"
-          />
-        ))}
-
-        {/* Date labels */}
-        <text
-          x={PADDING_LEFT}
-          y={HEIGHT - 4}
-          fontSize={9}
-          fill="#86868B"
-        >
-          {firstDate}
-        </text>
-        {sorted.length > 1 && (
-          <text
-            x={VIEW_WIDTH - PADDING_RIGHT}
-            y={HEIGHT - 4}
-            textAnchor="end"
-            fontSize={9}
-            fill="#86868B"
-          >
-            {lastDate}
-          </text>
-        )}
-      </svg>
+          <Area type="monotone" dataKey="poids" stroke="#34C759" strokeWidth={2.5} fill="url(#weightGrad)" dot={{ r: 3, fill: '#34C759', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+        </AreaChart>
+      </ResponsiveContainer>
     </Card>
   );
 }

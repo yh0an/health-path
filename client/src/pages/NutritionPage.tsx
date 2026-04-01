@@ -231,18 +231,18 @@ export function NutritionPage() {
 
       {/* Bottom sheet modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-40 flex flex-col justify-end">
+        <div className="fixed inset-0 z-50 flex flex-col justify-end">
           {/* Backdrop */}
           <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
 
-          {/* Sheet */}
-          <div className="relative bg-white rounded-t-2xl shadow-xl max-h-[90vh] overflow-y-auto z-10">
+          {/* Sheet — s'arrête au-dessus de la bottom nav (64px) */}
+          <div className="relative bg-white rounded-t-2xl shadow-xl flex flex-col z-10" style={{ maxHeight: 'calc(85vh - 64px)', marginBottom: '64px' }}>
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-1">
               <div className="w-10 h-1 rounded-full bg-gray-300" />
             </div>
 
-            <div className="px-4 pb-8 pt-2 space-y-4">
+            <div className="px-4 pt-2 space-y-4 overflow-y-auto flex-1">
               <h2 className="text-lg font-bold text-label">Ajouter un repas</h2>
 
               {/* Meal type pills */}
@@ -345,7 +345,10 @@ export function NutritionPage() {
                 />
               </div>
 
-              {/* Submit */}
+            </div>
+
+            {/* Submit — sticky en bas */}
+            <div className="px-4 py-3 border-t border-gray-100 bg-white">
               <button
                 onClick={handleSubmit}
                 disabled={submitting || !imageFile}

@@ -18,7 +18,7 @@ interface Props {
 }
 
 function formatDate(dateStr: string): string {
-  return new Date(dateStr + 'T12:00:00').toLocaleDateString('fr-FR', {
+  return new Date(dateStr).toLocaleDateString('fr-FR', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -26,15 +26,15 @@ function formatDate(dateStr: string): string {
 }
 
 function formatDateShort(dateStr: string): string {
-  return new Date(dateStr + 'T12:00:00').toLocaleDateString('fr-FR', {
+  return new Date(dateStr).toLocaleDateString('fr-FR', {
     day: 'numeric',
     month: 'short',
   });
 }
 
 function diffDays(a: string, b: string): number {
-  const msA = new Date(a + 'T12:00:00').getTime();
-  const msB = new Date(b + 'T12:00:00').getTime();
+  const msA = new Date(a).getTime();
+  const msB = new Date(b).getTime();
   return Math.round(Math.abs(msB - msA) / (1000 * 60 * 60 * 24));
 }
 

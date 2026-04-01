@@ -90,7 +90,7 @@ export const photosApi = {
     }).then((r) => r.json()) as Promise<ProgressPhoto>;
   },
   delete: (id: string) => request<void>(`/photos/${id}`, { method: 'DELETE' }),
-  getImageUrl: (filename: string) => `${BASE}/uploads/${filename}`,
+  getImageUrl: (url: string) => url,
 };
 
 // Calendar

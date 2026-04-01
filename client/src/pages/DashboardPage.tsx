@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import type { WeightEntry, Meal, WaterIntake } from '../services/api';
 import { weightApi, nutritionApi, waterApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -118,10 +119,15 @@ export function DashboardPage() {
   return (
     <div className="pt-6 px-4">
       {/* Header */}
-      <h1 className="text-2xl font-bold text-label">
-        Bonjour{user?.name ? `, ${user.name}` : ''}
-      </h1>
-      <p className="text-secondary text-sm mb-6">{todayLabel}</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-label">
+            Bonjour{user?.name ? `, ${user.name}` : ''}
+          </h1>
+          <p className="text-secondary text-sm mb-6">{todayLabel}</p>
+        </div>
+        <Link to="/settings" className="text-2xl leading-none mt-1">⚙️</Link>
+      </div>
 
       {/* 2×2 grid */}
       <div className="grid grid-cols-2 gap-3">

@@ -2,8 +2,7 @@ import { Response } from 'express';
 import { PhotoCategory } from '@prisma/client';
 import prisma from '../lib/prisma';
 import { AuthRequest } from '../middleware/auth';
-import fs from 'fs';
-import path from 'path';
+import { uploadFile, deleteFile } from '../services/storage.service';
 
 export async function getPhotos(req: AuthRequest, res: Response): Promise<void> {
   const { category } = req.query;
@@ -21,12 +20,13 @@ export async function uploadPhoto(req: AuthRequest, res: Response): Promise<void
   if (!req.file) { res.status(400).json({ error: 'No file uploaded' }); return; }
   const { date, category, notes } = req.body as { date: string; category: string; notes?: string };
   if (!date || !category) { res.status(400).json({ error: 'date and category required' }); return; }
+  const imageUrl = await uploadFile(req.file, 'photos');
   const photo = await prisma.progressPhoto.create({
     data: {
       userId: req.userId!,
       date: new Date(date),
       category: category as PhotoCategory,
-      imagePath: req.file.filename,
+      imagePath: imageUrl,
       notes: notes || null,
     },
   });
@@ -37,8 +37,7 @@ export async function deletePhoto(req: AuthRequest, res: Response): Promise<void
   const { id } = req.params;
   const photo = await prisma.progressPhoto.findFirst({ where: { id: id as string, userId: req.userId! } });
   if (!photo) { res.status(404).json({ error: 'Not found' }); return; }
-  const filePath = path.join(__dirname, '..', '..', 'uploads', photo.imagePath);
-  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  await deleteFile(photo.imagePath);
   await prisma.progressPhoto.delete({ where: { id: id as string } });
   res.status(204).send();
 }
