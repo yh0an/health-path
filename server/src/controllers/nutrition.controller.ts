@@ -9,17 +9,26 @@ import { upload } from '../middleware/upload';
 export const uploadMiddleware = upload.array('images', 10);
 
 export async function getMeals(req: AuthRequest, res: Response): Promise<void> {
-  const { date } = req.query;
-  const where: Record<string, unknown> = { userId: req.userId! };
-  if (date) {
-    where.date = new Date(date as string);
+  try {
+    const { date } = req.query;
+    const where: Record<string, unknown> = { userId: req.userId! };
+    if (date) {
+      const parsed = new Date(date as string);
+      if (isNaN(parsed.getTime())) {
+        res.status(400).json({ error: 'Date invalide' });
+        return;
+      }
+      where.date = parsed;
+    }
+    const meals = await prisma.meal.findMany({
+      where,
+      orderBy: [{ date: 'desc' }, { time: 'desc' }],
+      include: { photos: { orderBy: { order: 'asc' } } },
+    });
+    res.json(meals);
+  } catch {
+    res.status(500).json({ error: 'Erreur serveur' });
   }
-  const meals = await prisma.meal.findMany({
-    where,
-    orderBy: [{ date: 'desc' }, { time: 'desc' }],
-    include: { photos: { orderBy: { order: 'asc' } } },
-  });
-  res.json(meals);
 }
 
 export async function analyzeMeal(req: AuthRequest, res: Response): Promise<void> {
@@ -50,36 +59,48 @@ export async function createMeal(req: AuthRequest, res: Response): Promise<void>
     res.status(400).json({ error: 'mealType et date requis' });
     return;
   }
-  const imageUrls = await Promise.all(files.map(f => uploadFile(f)));
-  const meal = await prisma.meal.create({
-    data: {
-      userId: req.userId!,
-      mealType,
-      date: new Date(date),
-      time: time || null,
-      description: description || null,
-      estimatedKcal: estimatedKcal ? Number(estimatedKcal) : null,
-      photos: {
-        create: imageUrls.map((url, i) => ({ imageUrl: url, order: i })),
+  const uploadedUrls: string[] = [];
+  try {
+    for (const f of files) {
+      uploadedUrls.push(await uploadFile(f));
+    }
+    const meal = await prisma.meal.create({
+      data: {
+        userId: req.userId!,
+        mealType,
+        date: new Date(date),
+        time: time || null,
+        description: description || null,
+        estimatedKcal: estimatedKcal ? Number(estimatedKcal) : null,
+        photos: {
+          create: uploadedUrls.map((url, i) => ({ imageUrl: url, order: i })),
+        },
       },
-    },
-    include: { photos: { orderBy: { order: 'asc' } } },
-  });
-  res.status(201).json(meal);
+      include: { photos: { orderBy: { order: 'asc' } } },
+    });
+    res.status(201).json(meal);
+  } catch {
+    await Promise.allSettled(uploadedUrls.map(url => deleteFile(url)));
+    res.status(500).json({ error: 'Erreur lors de la création du repas' });
+  }
 }
 
 export async function deleteMeal(req: AuthRequest, res: Response): Promise<void> {
-  const id = req.params['id'] as string;
-  const meal = await prisma.meal.findFirst({
-    where: { id, userId: req.userId! },
-    include: { photos: true },
-  });
-  if (!meal) { res.status(404).json({ error: 'Non trouvé' }); return; }
-  const urlsToDelete: string[] = [
-    ...(meal.imageUrl ? [meal.imageUrl] : []),
-    ...meal.photos.map((p: { imageUrl: string }) => p.imageUrl),
-  ];
-  await Promise.all(urlsToDelete.map(url => deleteFile(url)));
-  await prisma.meal.delete({ where: { id } });
-  res.status(204).end();
+  try {
+    const id = req.params['id'] as string;
+    const meal = await prisma.meal.findFirst({
+      where: { id, userId: req.userId! },
+      include: { photos: true },
+    });
+    if (!meal) { res.status(404).json({ error: 'Non trouvé' }); return; }
+    const urlsToDelete: string[] = [
+      ...(meal.imageUrl ? [meal.imageUrl] : []),
+      ...meal.photos.map((p: { imageUrl: string }) => p.imageUrl),
+    ];
+    await Promise.all(urlsToDelete.map(url => deleteFile(url)));
+    await prisma.meal.delete({ where: { id } });
+    res.status(204).end();
+  } catch {
+    res.status(500).json({ error: 'Erreur lors de la suppression' });
+  }
 }
