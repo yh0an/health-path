@@ -43,7 +43,6 @@ export function TodayPage() {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const isToday = selectedDate === todayStr();
-  const userName = user?.name ?? '';
   const waterGoal = user?.waterGoalMl ?? 2000;
   const calorieGoal = user?.calorieGoal ?? 2000;
   const weighDay = user?.weighDay ?? 1;
