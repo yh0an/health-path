@@ -57,15 +57,28 @@ export const weightApi = {
 // Nutrition
 export const nutritionApi = {
   getMeals: (date?: string) => request<Meal[]>(`/nutrition${date ? '?date=' + date : ''}`),
-  upload: (formData: FormData) => {
+  analyze: (formData: FormData): Promise<{ estimatedKcal: number; detectedItems: string[] }> => {
+    const token = getToken();
+    return fetch(`${BASE}/nutrition/analyze`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    }).then(r => r.json()) as Promise<{ estimatedKcal: number; detectedItems: string[] }>;
+  },
+  upload: (formData: FormData): Promise<Meal> => {
     const token = getToken();
     return fetch(`${BASE}/nutrition`, {
       method: 'POST',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,
-    }).then((r) => r.json()) as Promise<Meal>;
+    }).then(r => r.json()) as Promise<Meal>;
   },
   delete: (id: string) => request<void>(`/nutrition/${id}`, { method: 'DELETE' }),
+};
+
+// Streaks
+export const streaksApi = {
+  get: () => request<{ waterStreak: number; weightStreak: number; calorieStreak: number }>('/weight/streaks'),
 };
 
 // Water
@@ -127,6 +140,7 @@ export interface UserProfile extends User {
   waterGoalMl: number;
   wakeHour: number;
   sleepHour: number;
+  weighDay: number;
   notificationSettings: NotificationSettings | null;
 }
 export interface NotificationSettings {
@@ -138,13 +152,21 @@ export interface NotificationSettings {
   eventReminderMinutesBefore: number;
 }
 export interface WeightEntry { id: string; weightKg: number; date: string; notes: string | null; createdAt: string; }
+export interface MealPhoto {
+  id: string;
+  mealId: string;
+  imageUrl: string;
+  order: number;
+}
 export interface Meal {
   id: string;
   mealType: 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK';
   date: string;
   time: string | null;
   description: string | null;
-  imageUrl: string;
+  imageUrl: string | null;
+  estimatedKcal: number | null;
+  photos: MealPhoto[];
   createdAt: string;
 }
 export interface WaterIntake { id: string; amountMl: number; date: string; createdAt: string; }
