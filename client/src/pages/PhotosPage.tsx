@@ -27,6 +27,30 @@ function formatDate(dateStr: string): string {
   return new Date(dateStr + 'T12:00:00').toLocaleDateString('fr-FR');
 }
 
+function AddPhotoCard({ uploading, onClick }: { uploading: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={uploading}
+      className="aspect-square rounded-lg bg-white border border-dashed border-blue flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform disabled:opacity-50"
+      aria-label="Ajouter une photo"
+    >
+      {uploading ? (
+        <span className="text-xs font-medium text-blue">...</span>
+      ) : (
+        <>
+          <div className="w-8 h-8 rounded-full bg-blue/10 flex items-center justify-center text-blue text-lg font-light">
+            +
+          </div>
+          <span className="text-[10px] font-semibold text-blue leading-tight text-center">
+            Ajouter<br />une photo
+          </span>
+        </>
+      )}
+    </button>
+  );
+}
+
 export function PhotosPage() {
   const [activeCategory, setActiveCategory] = useState<Category | undefined>(undefined);
   const [photos, setPhotos] = useState<ProgressPhoto[]>([]);
@@ -160,23 +184,7 @@ export function PhotosPage() {
             </div>
           ) : photos.length === 0 ? (
             <div className="grid grid-cols-3 gap-2">
-              <button
-                onClick={handleUploadClick}
-                disabled={uploading}
-                className="aspect-square rounded-lg bg-white border border-dashed border-blue flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform disabled:opacity-50"
-                aria-label="Ajouter une photo"
-              >
-                {uploading ? (
-                  <span className="text-xs font-medium text-blue">...</span>
-                ) : (
-                  <>
-                    <div className="w-8 h-8 rounded-full bg-blue/10 flex items-center justify-center text-blue text-lg font-light">
-                      +
-                    </div>
-                    <span className="text-[10px] font-semibold text-blue leading-tight text-center">Ajouter<br />une photo</span>
-                  </>
-                )}
-              </button>
+              <AddPhotoCard uploading={uploading} onClick={handleUploadClick} />
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-2">
@@ -194,23 +202,7 @@ export function PhotosPage() {
                 </button>
               ))}
               {/* Inline add card */}
-              <button
-                onClick={handleUploadClick}
-                disabled={uploading}
-                className="aspect-square rounded-lg bg-white border border-dashed border-blue flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform disabled:opacity-50"
-                aria-label="Ajouter une photo"
-              >
-                {uploading ? (
-                  <span className="text-xs font-medium text-blue">...</span>
-                ) : (
-                  <>
-                    <div className="w-8 h-8 rounded-full bg-blue/10 flex items-center justify-center text-blue text-lg font-light">
-                      +
-                    </div>
-                    <span className="text-[10px] font-semibold text-blue leading-tight text-center">Ajouter<br />une photo</span>
-                  </>
-                )}
-              </button>
+              <AddPhotoCard uploading={uploading} onClick={handleUploadClick} />
             </div>
           )}
         </>
