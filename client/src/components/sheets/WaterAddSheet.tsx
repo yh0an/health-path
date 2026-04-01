@@ -11,17 +11,22 @@ interface WaterAddSheetProps {
 }
 
 function todayStr() { return new Date().toISOString().slice(0, 10); }
+function nowTime() {
+  const n = new Date();
+  return `${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}`;
+}
 
 export function WaterAddSheet({ onClose, onAdded, onToast }: WaterAddSheetProps) {
   const [custom, setCustom] = useState('');
   const [date, setDate] = useState(todayStr());
+  const [time, setTime] = useState(nowTime());
   const [adding, setAdding] = useState(false);
 
   async function add(amount: number) {
     if (adding) return;
     setAdding(true);
     try {
-      await waterApi.add({ amountMl: amount, date });
+      await waterApi.add({ amountMl: amount, date, time });
       onAdded();
       onClose();
       onToast(`+${amount} ml ajouté`, 'success');
@@ -35,10 +40,16 @@ export function WaterAddSheet({ onClose, onAdded, onToast }: WaterAddSheetProps)
   return (
     <div style={{ padding: '0 16px 16px' }}>
       <h2 style={{ fontSize: 16, fontWeight: 800, color: '#f0f0f0', marginBottom: 16 }}>Ajouter de l'eau</h2>
-      <input
-        type="date" value={date} onChange={e => setDate(e.target.value)}
-        style={{ width: '100%', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '10px 12px', color: '#f0f0f0', fontSize: 13, outline: 'none', marginBottom: 12, boxSizing: 'border-box' as const, colorScheme: 'dark' as const }}
-      />
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <input
+          type="date" value={date} onChange={e => setDate(e.target.value)}
+          style={{ flex: 1, background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '10px 12px', color: '#f0f0f0', fontSize: 13, outline: 'none', boxSizing: 'border-box' as const, colorScheme: 'dark' as const }}
+        />
+        <input
+          type="time" value={time} onChange={e => setTime(e.target.value)}
+          style={{ width: 100, background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '10px 12px', color: '#f0f0f0', fontSize: 13, outline: 'none', boxSizing: 'border-box' as const, colorScheme: 'dark' as const }}
+        />
+      </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
         {QUICK.map(amount => (
           <button

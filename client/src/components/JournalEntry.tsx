@@ -164,7 +164,7 @@ export function JournalEntry({ entry, hasLine }: { entry: EntryType; hasLine: bo
     color = '#f59e0b';
     card = <MealCard meal={entry.data} onDelete={() => entry.onDelete(entry.data.id)} />;
   } else if (entry.kind === 'water') {
-    time = formatTime(entry.data.createdAt);
+    time = entry.data.time ?? formatTime(entry.data.createdAt);
     color = '#0ea5e9';
     card = <WaterCard entry={entry.data} totalMl={entry.totalMl} goalMl={entry.goalMl} onDelete={() => entry.onDelete(entry.data.id)} />;
   }

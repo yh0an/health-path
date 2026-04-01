@@ -28,10 +28,10 @@ export async function getWaterHistory(req: AuthRequest, res: Response): Promise<
 }
 
 export async function addWaterIntake(req: AuthRequest, res: Response): Promise<void> {
-  const { amountMl, date } = req.body;
+  const { amountMl, date, time } = req.body;
   if (!amountMl || !date) { res.status(400).json({ error: 'amountMl and date required' }); return; }
   const intake = await prisma.waterIntake.create({
-    data: { userId: req.userId!, amountMl: Number(amountMl), date: new Date(date) },
+    data: { userId: req.userId!, amountMl: Number(amountMl), date: new Date(date), time: time ?? null },
   });
   res.status(201).json(intake);
 }

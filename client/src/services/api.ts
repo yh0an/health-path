@@ -91,7 +91,7 @@ export const streaksApi = {
 export const waterApi = {
   getIntakes: (date: string) => request<WaterIntake[]>(`/water?date=${date}`),
   getHistory: () => request<Record<string, number>>('/water/history'),
-  add: (data: { amountMl: number; date: string }) =>
+  add: (data: { amountMl: number; date: string; time?: string }) =>
     request<WaterIntake>('/water', { method: 'POST', body: JSON.stringify(data) }),
   delete: (id: string) => request<void>(`/water/${id}`, { method: 'DELETE' }),
 };
@@ -175,7 +175,7 @@ export interface Meal {
   photos: MealPhoto[];
   createdAt: string;
 }
-export interface WaterIntake { id: string; amountMl: number; date: string; createdAt: string; }
+export interface WaterIntake { id: string; amountMl: number; date: string; time: string | null; createdAt: string; }
 export interface ProgressPhoto { id: string; date: string; category: 'FRONT' | 'SIDE' | 'BACK'; imagePath: string; notes: string | null; createdAt: string; }
 export interface CalendarEvent { id: string; title: string; description: string | null; date: string; endDate: string | null; eventType: 'MEDICAL' | 'SPORT' | 'OTHER'; sportType: string | null; isRecurring: boolean; completed: boolean; }
 export interface CreateEventPayload { title: string; date: string; eventType: string; description?: string; endDate?: string; sportType?: string; isRecurring?: boolean; recurrenceRule?: string; }
