@@ -159,8 +159,24 @@ export function PhotosPage() {
               ))}
             </div>
           ) : photos.length === 0 ? (
-            <div className="flex items-center justify-center h-48">
-              <p className="text-secondary text-sm">Aucune photo</p>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                onClick={handleUploadClick}
+                disabled={uploading}
+                className="aspect-square rounded-lg bg-white border border-dashed border-blue flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform disabled:opacity-50"
+                aria-label="Ajouter une photo"
+              >
+                {uploading ? (
+                  <span className="text-xs font-medium text-blue">...</span>
+                ) : (
+                  <>
+                    <div className="w-8 h-8 rounded-full bg-blue/10 flex items-center justify-center text-blue text-lg font-light">
+                      +
+                    </div>
+                    <span className="text-[10px] font-semibold text-blue leading-tight text-center">Ajouter<br />une photo</span>
+                  </>
+                )}
+              </button>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-2">
@@ -177,6 +193,24 @@ export function PhotosPage() {
                   />
                 </button>
               ))}
+              {/* Inline add card */}
+              <button
+                onClick={handleUploadClick}
+                disabled={uploading}
+                className="aspect-square rounded-lg bg-white border border-dashed border-blue flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform disabled:opacity-50"
+                aria-label="Ajouter une photo"
+              >
+                {uploading ? (
+                  <span className="text-xs font-medium text-blue">...</span>
+                ) : (
+                  <>
+                    <div className="w-8 h-8 rounded-full bg-blue/10 flex items-center justify-center text-blue text-lg font-light">
+                      +
+                    </div>
+                    <span className="text-[10px] font-semibold text-blue leading-tight text-center">Ajouter<br />une photo</span>
+                  </>
+                )}
+              </button>
             </div>
           )}
         </>
@@ -192,20 +226,6 @@ export function PhotosPage() {
         className="hidden"
         onChange={handleFileChange}
       />
-
-      {/* Upload FAB */}
-      <button
-        onClick={handleUploadClick}
-        disabled={uploading}
-        className="fixed bottom-20 right-4 w-14 h-14 rounded-full bg-blue text-white text-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform disabled:opacity-50"
-        aria-label="Ajouter une photo"
-      >
-        {uploading ? (
-          <span className="text-sm font-medium">...</span>
-        ) : (
-          '📷'
-        )}
-      </button>
 
       {/* Detail modal */}
       {selectedPhoto && (
