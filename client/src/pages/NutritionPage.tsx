@@ -339,7 +339,6 @@ export function NutritionPage() {
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
-                  capture="environment"
                   className="hidden"
                   onChange={handleFileChange}
                 />
