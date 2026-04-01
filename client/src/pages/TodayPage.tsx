@@ -15,29 +15,39 @@ import { PhotoAddSheet } from '../components/sheets/PhotoAddSheet';
 
 function todayStr() { return new Date().toISOString().slice(0, 10); }
 
-function capitalize(s: string) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+function addDays(dateStr: string, n: number): string {
+  const d = new Date(dateStr + 'T12:00:00');
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+
+function formatDateLabel(dateStr: string): string {
+  if (dateStr === todayStr()) return "Aujourd'hui";
+  const d = new Date(dateStr + 'T12:00:00');
+  const label = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
 
 type Sheet = 'quick' | 'water' | 'weight' | 'meal' | 'photo' | null;
 
 type Toast = { id: number; msg: string; type: 'success' | 'error' };
 
-function isWeighDay(weighDay: number): boolean {
-  return new Date().getDay() === weighDay;
-}
-
 export function TodayPage() {
   const { user } = useAuth();
 
+  const [selectedDate, setSelectedDate] = useState(todayStr());
   const [weightEntries, setWeightEntries] = useState<WeightEntry[]>([]);
   const [meals, setMeals] = useState<Meal[]>([]);
   const [waterIntakes, setWaterIntakes] = useState<WaterIntake[]>([]);
   const [sheet, setSheet] = useState<Sheet>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const today = todayStr();
-  const todayLabel = capitalize(
-    new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
-  );
+  const isToday = selectedDate === todayStr();
+  const userName = user?.name ?? '';
+  const waterGoal = user?.waterGoalMl ?? 2000;
+  const calorieGoal = user?.calorieGoal ?? 2000;
+  const weighDay = user?.weighDay ?? 1;
+  const showWeighRing = new Date(selectedDate + 'T12:00:00').getDay() === weighDay;
 
   function addToast(msg: string, type: 'success' | 'error') {
     const id = Date.now();
@@ -48,23 +58,19 @@ export function TodayPage() {
   const fetchAll = useCallback(async () => {
     const [wRes, mRes, wIntRes] = await Promise.allSettled([
       weightApi.getEntries(),
-      nutritionApi.getMeals(today),
-      waterApi.getIntakes(today),
+      nutritionApi.getMeals(selectedDate),
+      waterApi.getIntakes(selectedDate),
     ]);
     if (wRes.status === 'fulfilled') setWeightEntries(wRes.value ?? []);
     if (mRes.status === 'fulfilled') setMeals(mRes.value ?? []);
     if (wIntRes.status === 'fulfilled') setWaterIntakes(wIntRes.value ?? []);
-  }, [today]);
+  }, [selectedDate]);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
-  const todayWeight = weightEntries.find(e => new Date(e.date).toISOString().split('T')[0] === today) ?? null;
+  const selectedWeight = weightEntries.find(e => new Date(e.date).toISOString().split('T')[0] === selectedDate) ?? null;
   const totalWaterMl = waterIntakes.reduce((s, w) => s + w.amountMl, 0);
   const totalCalories = meals.reduce((s, m) => s + (m.estimatedKcal ?? 0), 0);
-  const waterGoal = user?.waterGoalMl ?? 2000;
-  const calorieGoal = user?.calorieGoal ?? 2000;
-  const weighDay = user?.weighDay ?? 1;
-  const showWeighRing = isWeighDay(weighDay);
 
   // Build journal entries sorted by time
   type JournalItem =
@@ -74,14 +80,13 @@ export function TodayPage() {
 
   const items: JournalItem[] = [];
 
-  if (todayWeight) {
-    items.push({ kind: 'weight', time: new Date(todayWeight.createdAt).getTime(), data: todayWeight });
+  if (selectedWeight) {
+    items.push({ kind: 'weight', time: new Date(selectedWeight.createdAt).getTime(), data: selectedWeight });
   }
   meals.forEach(m => {
     items.push({ kind: 'meal', time: new Date(m.createdAt).getTime(), data: m });
   });
 
-  // Build running totals for water
   const sortedWater = [...waterIntakes].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   let runningWater = 0;
   sortedWater.forEach(w => {
@@ -116,12 +121,8 @@ export function TodayPage() {
   }
 
   const todayMealTypes = meals.map(m => m.mealType);
-
-  // Pending hints — uniquement la pesée si c'est le jour configuré
   const pendingItems: string[] = [];
-  if (showWeighRing && !todayWeight) pendingItems.push('Pesée non réalisée');
-
-  const userName = user?.name ?? '';
+  if (isToday && showWeighRing && !selectedWeight) pendingItems.push('Pesée non réalisée');
 
   return (
     <>
@@ -144,15 +145,40 @@ export function TodayPage() {
         caloriesKcal={totalCalories}
         calorieGoal={calorieGoal}
         showWeighRing={showWeighRing}
-        weighed={!!todayWeight}
+        weighed={!!selectedWeight}
       />
 
       <div style={{ padding: '20px 16px 0' }}>
-        <div style={{ fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: -0.5, lineHeight: 1.1 }}>
-          Bonjour,<br />
-          <span style={{ color: '#d4a843' }}>{userName}</span>
+        {isToday ? (
+          <div style={{ fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: -0.5, lineHeight: 1.1 }}>
+            Bonjour,<br />
+            <span style={{ color: '#d4a843' }}>{userName}</span>
+          </div>
+        ) : (
+          <div style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>
+            Carnet du jour
+          </div>
+        )}
+
+        {/* Date navigation */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+          <button
+            onClick={() => setSelectedDate(d => addDays(d, -1))}
+            style={{ background: 'none', border: 'none', color: '#888', fontSize: 18, cursor: 'pointer', padding: '2px 6px', lineHeight: 1 }}
+          >
+            ‹
+          </button>
+          <div style={{ fontSize: 11, color: '#777', textTransform: 'uppercase', letterSpacing: 1, flex: 1, textAlign: 'center' }}>
+            {formatDateLabel(selectedDate)}
+          </div>
+          <button
+            onClick={() => setSelectedDate(d => addDays(d, 1))}
+            disabled={isToday}
+            style={{ background: 'none', border: 'none', color: isToday ? '#333' : '#888', fontSize: 18, cursor: isToday ? 'default' : 'pointer', padding: '2px 6px', lineHeight: 1 }}
+          >
+            ›
+          </button>
         </div>
-        <div style={{ fontSize: 11, color: '#777', marginTop: 4, textTransform: 'uppercase', letterSpacing: 1 }}>{todayLabel}</div>
       </div>
 
       <div style={{ padding: '24px 16px 120px' }}>
@@ -183,7 +209,7 @@ export function TodayPage() {
 
         {items.length === 0 && pendingItems.length === 0 && (
           <div style={{ textAlign: 'center', color: '#555', padding: '40px 0', fontSize: 13 }}>
-            Rien encore aujourd'hui — appuie sur + pour commencer
+            {isToday ? "Rien encore aujourd'hui — appuie sur + pour commencer" : 'Aucune entrée ce jour-là'}
           </div>
         )}
 
@@ -192,7 +218,7 @@ export function TodayPage() {
         ))}
       </div>
 
-      <FAB onClick={() => setSheet('quick')} />
+      {isToday && <FAB onClick={() => setSheet('quick')} />}
 
       <BottomSheet open={sheet === 'quick'} onClose={() => setSheet(null)}>
         <QuickAddSheet
