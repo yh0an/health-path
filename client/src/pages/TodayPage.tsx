@@ -148,37 +148,41 @@ export function TodayPage() {
         weighed={!!selectedWeight}
       />
 
-      <div style={{ padding: '20px 16px 0' }}>
-        {isToday ? (
-          <div style={{ fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: -0.5, lineHeight: 1.1 }}>
-            Bonjour,<br />
-            <span style={{ color: '#d4a843' }}>{userName}</span>
-          </div>
-        ) : (
-          <div style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>
-            Carnet du jour
-          </div>
-        )}
-
-        {/* Date navigation */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginTop: 6 }}>
+      <div style={{ padding: '16px 16px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {/* Date navigation — élément principal */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button
             onClick={() => setSelectedDate(d => addDays(d, -1))}
-            style={{ background: 'none', border: 'none', color: '#666', fontSize: 16, cursor: 'pointer', padding: '2px 8px 2px 0', lineHeight: 1 }}
+            style={{ width: 30, height: 30, borderRadius: 8, background: '#1c1c1c', border: '1px solid #2e2e2e', color: '#aaa', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}
           >
             ‹
           </button>
-          <div style={{ fontSize: 11, color: '#777', textTransform: 'uppercase', letterSpacing: 1 }}>
-            {formatDateLabel(selectedDate)}
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', letterSpacing: -0.3 }}>
+              {formatDateLabel(selectedDate)}
+            </div>
+            {!isToday && (
+              <div style={{ fontSize: 10, color: '#555', marginTop: 1 }}>
+                {new Date(selectedDate + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </div>
+            )}
           </div>
           <button
             onClick={() => setSelectedDate(d => addDays(d, 1))}
             disabled={isToday}
-            style={{ background: 'none', border: 'none', color: isToday ? '#2a2a2a' : '#666', fontSize: 16, cursor: isToday ? 'default' : 'pointer', padding: '2px 0 2px 8px', lineHeight: 1 }}
+            style={{ width: 30, height: 30, borderRadius: 8, background: '#1c1c1c', border: `1px solid ${isToday ? '#1c1c1c' : '#2e2e2e'}`, color: isToday ? '#2a2a2a' : '#aaa', fontSize: 16, cursor: isToday ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}
           >
             ›
           </button>
         </div>
+
+        {/* Greeting — discret à droite */}
+        {isToday && (
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 11, color: '#555' }}>Bonjour</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#d4a843' }}>{userName}</div>
+          </div>
+        )}
       </div>
 
       <div style={{ padding: '24px 16px 120px' }}>
