@@ -149,13 +149,6 @@ export function TodayPage() {
       />
 
       <div style={{ padding: '16px 16px 0' }}>
-        {/* Greeting — une ligne discrète */}
-        {isToday && (
-          <div style={{ fontSize: 12, color: '#666', marginBottom: 6 }}>
-            Bonjour, <span style={{ color: '#d4a843', fontWeight: 700 }}>{userName}</span>
-          </div>
-        )}
-
         {/* Date navigation — pleine largeur */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <button
