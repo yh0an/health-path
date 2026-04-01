@@ -218,16 +218,18 @@ export function NutritionPage() {
             );
           })
         )}
+        {/* Inline add card */}
+        <button
+          onClick={openModal}
+          className="w-full flex items-center gap-3 bg-white rounded-card p-3 border border-dashed border-accent active:scale-[0.98] transition-transform"
+          aria-label="Ajouter un repas"
+        >
+          <div className="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center text-accent text-xl font-light">
+            +
+          </div>
+          <span className="text-sm font-semibold text-accent">Ajouter un repas</span>
+        </button>
       </div>
-
-      {/* FAB */}
-      <button
-        onClick={openModal}
-        className="fixed bottom-20 right-4 w-14 h-14 bg-accent rounded-full shadow-lg flex items-center justify-center text-2xl z-30 active:scale-95 transition-transform"
-        aria-label="Ajouter un repas"
-      >
-        📷
-      </button>
 
       {/* Bottom sheet modal */}
       {modalOpen && (
