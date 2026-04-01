@@ -1,6 +1,6 @@
 // client/src/components/sheets/QuickAddSheet.tsx
 import type { CSSProperties } from 'react';
-type ActionType = 'water' | 'meal' | 'weight';
+type ActionType = 'water' | 'meal' | 'weight' | 'photo';
 
 interface QuickAddSheetProps {
   onSelect: (action: ActionType) => void;
@@ -34,10 +34,13 @@ export function QuickAddSheet({ onSelect, onClose: _onClose, isWeighDay, waterMl
   // Build contextual suggestions
   const suggestions: { type: ActionType; label: string; hint: string; highlighted: boolean }[] = [];
 
-  // Weigh day
-  if (isWeighDay) {
-    suggestions.push({ type: 'weight', label: 'Pesée', hint: "C'est ton jour de pesée", highlighted: true });
-  }
+  // Weigh day — toujours visible, highlighted si c'est le jour configuré
+  suggestions.push({
+    type: 'weight',
+    label: 'Pesée',
+    hint: isWeighDay ? "C'est ton jour de pesée" : 'Logger ton poids',
+    highlighted: isWeighDay,
+  });
 
   // Meal suggestions based on hour
   if (h < 10 && missedMeals.some(m => m.type === 'BREAKFAST')) {
@@ -63,6 +66,9 @@ export function QuickAddSheet({ onSelect, onClose: _onClose, isWeighDay, waterMl
     suggestions.push({ type: 'meal', label: 'Repas / Collation', hint: 'Logger un repas', highlighted: false });
   }
 
+  // Photo toujours disponible
+  suggestions.push({ type: 'photo', label: "Photo d'évolution", hint: 'Face, profil ou dos', highlighted: false });
+
   const itemStyle = (highlighted: boolean): CSSProperties => ({
     display: 'flex',
     alignItems: 'center',
@@ -75,7 +81,7 @@ export function QuickAddSheet({ onSelect, onClose: _onClose, isWeighDay, waterMl
     marginBottom: 8,
   });
 
-  const icons: Record<ActionType, string> = { water: '💧', meal: '🍽', weight: '⚖️' };
+  const icons: Record<ActionType, string> = { water: '💧', meal: '🍽', weight: '⚖️', photo: '📷' };
 
   return (
     <div style={{ padding: '0 16px 16px' }}>

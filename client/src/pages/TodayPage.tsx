@@ -11,12 +11,13 @@ import { QuickAddSheet } from '../components/sheets/QuickAddSheet';
 import { WaterAddSheet } from '../components/sheets/WaterAddSheet';
 import { WeightAddSheet } from '../components/sheets/WeightAddSheet';
 import { MealAddSheet } from '../components/sheets/MealAddSheet';
+import { PhotoAddSheet } from '../components/sheets/PhotoAddSheet';
 
 function todayStr() { return new Date().toISOString().slice(0, 10); }
 
 function capitalize(s: string) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 
-type Sheet = 'quick' | 'water' | 'weight' | 'meal' | null;
+type Sheet = 'quick' | 'water' | 'weight' | 'meal' | 'photo' | null;
 
 type Toast = { id: number; msg: string; type: 'success' | 'error' };
 
@@ -219,6 +220,10 @@ export function TodayPage() {
 
       <BottomSheet open={sheet === 'meal'} onClose={() => setSheet(null)}>
         <MealAddSheet onClose={() => setSheet(null)} onAdded={fetchAll} onToast={addToast} />
+      </BottomSheet>
+
+      <BottomSheet open={sheet === 'photo'} onClose={() => setSheet(null)}>
+        <PhotoAddSheet onClose={() => setSheet(null)} onAdded={fetchAll} onToast={addToast} />
       </BottomSheet>
     </>
   );
