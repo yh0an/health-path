@@ -26,7 +26,7 @@ export function ObjectivesBar({
         zIndex: 20,
         background: '#0a0a0a',
         padding: '8px 16px 10px',
-        borderBottom: '1px solid #141414',
+        borderBottom: '1px solid #1e1e1e',
       }}
     >
       <div
@@ -34,11 +34,11 @@ export function ObjectivesBar({
           display: 'flex',
           gap: 8,
           background: '#111',
-          borderRadius: 16,
-          padding: '10px 16px',
+          borderRadius: 18,
+          padding: '12px 20px',
           alignItems: 'center',
           justifyContent: showWeighRing ? 'space-around' : 'space-evenly',
-          border: '1px solid #1a1a1a',
+          border: '1px solid #222',
         }}
       >
         <MiniRing
@@ -47,7 +47,7 @@ export function ObjectivesBar({
           color="#0ea5e9"
           label="Eau"
         />
-        <div style={{ width: 1, height: 28, background: '#1e1e1e' }} />
+        <div style={{ width: 1, height: 32, background: '#222' }} />
         <MiniRing
           value={caloriesKcal}
           max={calorieGoal}
@@ -56,7 +56,7 @@ export function ObjectivesBar({
         />
         {showWeighRing && (
           <>
-            <div style={{ width: 1, height: 28, background: '#1e1e1e' }} />
+            <div style={{ width: 1, height: 32, background: '#222' }} />
             <MiniRing
               value={weighed ? 1 : 0}
               max={1}

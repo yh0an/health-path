@@ -154,7 +154,7 @@ export function TodayPage() {
           Bonjour,<br />
           <span style={{ color: '#d4a843' }}>{userName}</span>
         </div>
-        <div style={{ fontSize: 11, color: '#444', marginTop: 4, textTransform: 'uppercase', letterSpacing: 1 }}>{todayLabel}</div>
+        <div style={{ fontSize: 11, color: '#777', marginTop: 4, textTransform: 'uppercase', letterSpacing: 1 }}>{todayLabel}</div>
       </div>
 
       <div style={{ padding: '24px 16px 120px' }}>
@@ -184,7 +184,7 @@ export function TodayPage() {
         })}
 
         {items.length === 0 && pendingItems.length === 0 && (
-          <div style={{ textAlign: 'center', color: '#2a2a2a', padding: '40px 0', fontSize: 13 }}>
+          <div style={{ textAlign: 'center', color: '#555', padding: '40px 0', fontSize: 13 }}>
             Rien encore aujourd'hui — appuie sur + pour commencer
           </div>
         )}
