@@ -13,13 +13,14 @@ function todayStr() { return new Date().toISOString().slice(0, 10); }
 
 export function WeightAddSheet({ lastWeight, onClose, onAdded, onToast }: WeightAddSheetProps) {
   const [value, setValue] = useState(lastWeight !== null ? String(lastWeight) : '');
+  const [date, setDate] = useState(todayStr());
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit() {
     if (!value || isNaN(parseFloat(value))) return;
     setSubmitting(true);
     try {
-      await weightApi.create({ weightKg: parseFloat(value), date: todayStr() });
+      await weightApi.create({ weightKg: parseFloat(value), date });
       onAdded();
       onClose();
       onToast('Pesée enregistrée', 'success');
@@ -32,7 +33,11 @@ export function WeightAddSheet({ lastWeight, onClose, onAdded, onToast }: Weight
 
   return (
     <div style={{ padding: '0 16px 16px' }}>
-      <h2 style={{ fontSize: 16, fontWeight: 800, color: '#f0f0f0', marginBottom: 16 }}>Pesée du jour</h2>
+      <h2 style={{ fontSize: 16, fontWeight: 800, color: '#f0f0f0', marginBottom: 16 }}>Pesée</h2>
+      <input
+        type="date" value={date} onChange={e => setDate(e.target.value)}
+        style={{ width: '100%', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '10px 12px', color: '#f0f0f0', fontSize: 13, outline: 'none', marginBottom: 12, boxSizing: 'border-box', colorScheme: 'dark' }}
+      />
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, background: '#1a1a1a', borderRadius: 14, padding: '16px', marginBottom: 16, border: '1px solid #2a2a2a' }}>
         <input
           type="number"

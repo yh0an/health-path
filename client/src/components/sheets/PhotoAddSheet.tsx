@@ -18,6 +18,7 @@ interface PhotoAddSheetProps {
 
 export function PhotoAddSheet({ onClose, onAdded, onToast }: PhotoAddSheetProps) {
   const [category, setCategory] = useState<Category>('FRONT');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -25,7 +26,7 @@ export function PhotoAddSheet({ onClose, onAdded, onToast }: PhotoAddSheetProps)
     const fd = new FormData();
     fd.append('photo', file);
     fd.append('category', category);
-    fd.append('date', new Date().toISOString().split('T')[0]);
+    fd.append('date', date);
     setUploading(true);
     try {
       await photosApi.upload(fd);
@@ -42,6 +43,11 @@ export function PhotoAddSheet({ onClose, onAdded, onToast }: PhotoAddSheetProps)
   return (
     <div style={{ padding: '0 16px 24px' }}>
       <div style={{ fontSize: 13, fontWeight: 800, color: '#f0f0f0', marginBottom: 16 }}>Photo d'évolution</div>
+
+      <input
+        type="date" value={date} onChange={e => setDate(e.target.value)}
+        style={{ width: '100%', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '10px 12px', color: '#f0f0f0', fontSize: 13, outline: 'none', marginBottom: 12, boxSizing: 'border-box' as const, colorScheme: 'dark' as const }}
+      />
 
       {/* Category selector */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
