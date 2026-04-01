@@ -114,6 +114,7 @@ export function MealAddSheet({ onClose, onAdded, onToast }: MealAddSheetProps) {
   const inputStyle: CSSProperties = {
     flex: 1, background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10,
     padding: '10px 12px', color: '#f0f0f0', fontSize: 13, outline: 'none', width: '100%', boxSizing: 'border-box',
+    colorScheme: 'dark',
   };
 
   if (step === 'type') return (
