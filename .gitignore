@@ -26,3 +26,6 @@ Thumbs.db
 
 # Kamal secrets (never commit)
 .kamal/secrets
+
+# Superpowers brainstorm sessions
+.superpowers/
