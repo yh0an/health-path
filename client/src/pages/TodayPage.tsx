@@ -161,20 +161,20 @@ export function TodayPage() {
         )}
 
         {/* Date navigation */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginTop: 6 }}>
           <button
             onClick={() => setSelectedDate(d => addDays(d, -1))}
-            style={{ background: 'none', border: 'none', color: '#888', fontSize: 18, cursor: 'pointer', padding: '2px 6px', lineHeight: 1 }}
+            style={{ background: 'none', border: 'none', color: '#666', fontSize: 16, cursor: 'pointer', padding: '2px 8px 2px 0', lineHeight: 1 }}
           >
             ‹
           </button>
-          <div style={{ fontSize: 11, color: '#777', textTransform: 'uppercase', letterSpacing: 1, flex: 1, textAlign: 'center' }}>
+          <div style={{ fontSize: 11, color: '#777', textTransform: 'uppercase', letterSpacing: 1 }}>
             {formatDateLabel(selectedDate)}
           </div>
           <button
             onClick={() => setSelectedDate(d => addDays(d, 1))}
             disabled={isToday}
-            style={{ background: 'none', border: 'none', color: isToday ? '#333' : '#888', fontSize: 18, cursor: isToday ? 'default' : 'pointer', padding: '2px 6px', lineHeight: 1 }}
+            style={{ background: 'none', border: 'none', color: isToday ? '#2a2a2a' : '#666', fontSize: 16, cursor: isToday ? 'default' : 'pointer', padding: '2px 0 2px 8px', lineHeight: 1 }}
           >
             ›
           </button>
