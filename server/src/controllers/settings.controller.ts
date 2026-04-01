@@ -9,7 +9,7 @@ export async function getProfile(req: AuthRequest, res: Response): Promise<void>
     select: {
       id: true, email: true, name: true, heightCm: true, targetWeightKg: true,
       calorieGoal: true, proteinGoalPct: true, carbsGoalPct: true, fatGoalPct: true,
-      waterGoalMl: true, wakeHour: true, sleepHour: true,
+      waterGoalMl: true, weighDay: true, wakeHour: true, sleepHour: true,
       notificationSettings: true,
     },
   });
@@ -21,7 +21,7 @@ export async function updateProfile(req: AuthRequest, res: Response): Promise<vo
   const body = req.body as Partial<{
     name: string; email: string; heightCm: number; targetWeightKg: number;
     calorieGoal: number; proteinGoalPct: number; carbsGoalPct: number; fatGoalPct: number;
-    waterGoalMl: number; wakeHour: number; sleepHour: number;
+    waterGoalMl: number; weighDay: number; wakeHour: number; sleepHour: number;
   }>;
   const user = await prisma.user.update({
     where: { id: req.userId! },
@@ -35,13 +35,14 @@ export async function updateProfile(req: AuthRequest, res: Response): Promise<vo
       ...(body.carbsGoalPct !== undefined && { carbsGoalPct: Number(body.carbsGoalPct) }),
       ...(body.fatGoalPct !== undefined && { fatGoalPct: Number(body.fatGoalPct) }),
       ...(body.waterGoalMl !== undefined && { waterGoalMl: Number(body.waterGoalMl) }),
+      ...(body.weighDay !== undefined && { weighDay: Number(body.weighDay) }),
       ...(body.wakeHour !== undefined && { wakeHour: Number(body.wakeHour) }),
       ...(body.sleepHour !== undefined && { sleepHour: Number(body.sleepHour) }),
     },
     select: {
       id: true, email: true, name: true, heightCm: true, targetWeightKg: true,
       calorieGoal: true, proteinGoalPct: true, carbsGoalPct: true, fatGoalPct: true,
-      waterGoalMl: true, wakeHour: true, sleepHour: true,
+      waterGoalMl: true, weighDay: true, wakeHour: true, sleepHour: true,
     },
   });
   res.json(user);
