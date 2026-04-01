@@ -1,5 +1,6 @@
 // server/src/services/ai.service.ts
 import Anthropic from '@anthropic-ai/sdk';
+import sharp from 'sharp';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -29,13 +30,19 @@ export async function analyzeMealPhotos(
     throw new Error('imageBuffers et mimeTypes doivent avoir la même longueur.');
   }
 
-  const imageContent: Anthropic.ImageBlockParam[] = imageBuffers.map((buffer, i) => {
+  const resized = await Promise.all(
+    imageBuffers.map(buf =>
+      sharp(buf).resize({ width: 1024, height: 1024, fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 80 }).toBuffer()
+    )
+  );
+
+  const imageContent: Anthropic.ImageBlockParam[] = resized.map((buffer, i) => {
     assertMimeType(mimeTypes[i]);
     return {
       type: 'image',
       source: {
         type: 'base64',
-        media_type: mimeTypes[i] as AllowedMimeType,
+        media_type: 'image/jpeg',
         data: buffer.toString('base64'),
       },
     };
