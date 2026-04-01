@@ -38,6 +38,15 @@ app.use('/api/uploads', authMiddleware, express.static(path.join(__dirname, '..'
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
+// Serve client in production
+if (process.env.NODE_ENV === 'production') {
+  const publicPath = path.join(__dirname, '..', 'public');
+  app.use(express.static(publicPath));
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(publicPath, 'index.html'));
+  });
+}
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   initWebPush();
