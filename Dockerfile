@@ -36,6 +36,7 @@ WORKDIR /app
 COPY --from=server-builder /app/dist ./dist
 COPY --from=server-builder /app/node_modules ./node_modules
 COPY --from=server-builder /app/prisma ./prisma
+COPY --from=server-builder /app/prisma.config.ts ./prisma.config.ts
 COPY server/package.json ./package.json
 COPY --from=client-builder /app/dist ./public
 EXPOSE 4800
