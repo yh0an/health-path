@@ -60,6 +60,7 @@ export function SettingsPage() {
   const [carbsGoalPct, setCarbsGoalPct] = useState('');
   const [fatGoalPct, setFatGoalPct] = useState('');
   const [waterGoalMl, setWaterGoalMl] = useState('');
+  const [weighDay, setWeighDay] = useState(1);
   const [savingGoals, setSavingGoals] = useState(false);
 
   // ── Section 3: Notifications ──
@@ -92,6 +93,7 @@ export function SettingsPage() {
     setCarbsGoalPct(String(user.carbsGoalPct ?? ''));
     setFatGoalPct(String(user.fatGoalPct ?? ''));
     setWaterGoalMl(String(user.waterGoalMl ?? ''));
+    setWeighDay(user.weighDay ?? 1);
 
     const ns: NotificationSettings | null = user.notificationSettings;
     if (ns) {
@@ -140,6 +142,7 @@ export function SettingsPage() {
         carbsGoalPct: Number(carbsGoalPct),
         fatGoalPct: Number(fatGoalPct),
         waterGoalMl: Number(waterGoalMl),
+        weighDay,
       });
       await refreshProfile();
       addToast('Objectifs mis à jour', 'success');
@@ -337,6 +340,26 @@ export function SettingsPage() {
               className={inputClass}
               min={0}
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-secondary mb-1">Jour de pesée</label>
+            <select
+              value={weighDay}
+              onChange={(e) => setWeighDay(Number(e.target.value))}
+              className={inputClass}
+            >
+              {[
+                { value: 0, label: 'Dimanche' },
+                { value: 1, label: 'Lundi' },
+                { value: 2, label: 'Mardi' },
+                { value: 3, label: 'Mercredi' },
+                { value: 4, label: 'Jeudi' },
+                { value: 5, label: 'Vendredi' },
+                { value: 6, label: 'Samedi' },
+              ].map(({ value, label }) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
           </div>
         </div>
         <div className="mt-4">
