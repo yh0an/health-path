@@ -1,5 +1,6 @@
 // client/src/components/JournalEntry.tsx
 import type { ReactNode } from 'react';
+import { motion } from 'motion/react';
 import type { WeightEntry, Meal, WaterIntake } from '../services/api';
 
 type EntryType =
@@ -140,7 +141,7 @@ function PendingCard({ label }: { label: string }) {
   );
 }
 
-export function JournalEntry({ entry, hasLine }: { entry: EntryType; hasLine: boolean }) {
+export function JournalEntry({ entry, hasLine, index = 0 }: { entry: EntryType; hasLine: boolean; index?: number }) {
   if (entry.kind === 'pending') {
     return (
       <div style={{ display: 'flex', gap: 10, marginBottom: 8, alignItems: 'flex-start' }}>
@@ -170,12 +171,17 @@ export function JournalEntry({ entry, hasLine }: { entry: EntryType; hasLine: bo
   }
 
   return (
-    <div style={{ display: 'flex', gap: 10, marginBottom: 10, alignItems: 'flex-start' }}>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, delay: index * 0.05, ease: 'easeOut' }}
+      style={{ display: 'flex', gap: 10, marginBottom: 10, alignItems: 'flex-start' }}
+    >
       <div style={{ fontSize: 11, color: '#aaa', width: 34, paddingTop: 12, flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
         {time}
       </div>
       <DotLine color={color} hasLine={hasLine} />
       {card}
-    </div>
+    </motion.div>
   );
 }

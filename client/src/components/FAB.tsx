@@ -1,18 +1,25 @@
 // client/src/components/FAB.tsx
+import { motion } from 'motion/react';
+
 interface FABProps {
   onClick: () => void;
 }
 
 export function FAB({ onClick }: FABProps) {
   return (
-    <button
+    <motion.button
       onClick={onClick}
       aria-label="Ajouter une entrée"
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0, opacity: 0 }}
+      whileTap={{ scale: 0.9 }}
+      transition={{ type: 'spring', damping: 18, stiffness: 400 }}
       style={{
         position: 'fixed',
         bottom: 80,
         left: '50%',
-        transform: 'translateX(-50%)',
+        x: '-50%',
         width: 56,
         height: 56,
         borderRadius: '50%',
@@ -28,12 +35,9 @@ export function FAB({ onClick }: FABProps) {
         cursor: 'pointer',
         zIndex: 30,
         lineHeight: 1,
-        transition: 'transform 0.15s, box-shadow 0.15s',
       }}
-      onPointerDown={e => (e.currentTarget.style.transform = 'translateX(-50%) scale(0.94)')}
-      onPointerUp={e => (e.currentTarget.style.transform = 'translateX(-50%) scale(1)')}
     >
       +
-    </button>
+    </motion.button>
   );
 }

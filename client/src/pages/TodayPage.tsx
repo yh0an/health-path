@@ -1,5 +1,6 @@
 // client/src/pages/TodayPage.tsx
 import { useState, useEffect, useCallback } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
 import { weightApi, nutritionApi, waterApi } from '../services/api';
 import type { WeightEntry, Meal, WaterIntake } from '../services/api';
@@ -126,16 +127,25 @@ export function TodayPage() {
   return (
     <>
       {/* Toast notifications */}
-      <div style={{ position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 100, display: 'flex', flexDirection: 'column', gap: 8, pointerEvents: 'none' }}>
-        {toasts.map(t => (
-          <div key={t.id} style={{
-            background: t.type === 'success' ? '#1a2a1a' : '#2a1a1a',
-            border: `1px solid ${t.type === 'success' ? '#4ade80' : '#f87171'}`,
-            color: t.type === 'success' ? '#4ade80' : '#f87171',
-            borderRadius: 10, padding: '8px 16px', fontSize: 12, fontWeight: 700,
-            whiteSpace: 'nowrap',
-          }}>{t.msg}</div>
-        ))}
+      <div style={{ position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 100, display: 'flex', flexDirection: 'column', gap: 8, pointerEvents: 'none', alignItems: 'center' }}>
+        <AnimatePresence>
+          {toasts.map(t => (
+            <motion.div
+              key={t.id}
+              initial={{ opacity: 0, y: -12, scale: 0.92 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              style={{
+                background: t.type === 'success' ? '#1a2a1a' : '#2a1a1a',
+                border: `1px solid ${t.type === 'success' ? '#4ade80' : '#f87171'}`,
+                color: t.type === 'success' ? '#4ade80' : '#f87171',
+                borderRadius: 10, padding: '8px 16px', fontSize: 12, fontWeight: 700,
+                whiteSpace: 'nowrap',
+              }}
+            >{t.msg}</motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       <ObjectivesBar
@@ -181,7 +191,7 @@ export function TodayPage() {
           const hasLine = i < items.length - 1 || pendingItems.length > 0;
           if (item.kind === 'weight') {
             return (
-              <JournalEntry key={item.data.id} hasLine={hasLine} entry={{
+              <JournalEntry key={item.data.id} index={i} hasLine={hasLine} entry={{
                 kind: 'weight', data: item.data,
                 heightCm: user?.heightCm ?? null,
                 targetWeightKg: user?.targetWeightKg ?? null,
@@ -190,11 +200,11 @@ export function TodayPage() {
             );
           }
           if (item.kind === 'meal') {
-            return <JournalEntry key={item.data.id} hasLine={hasLine} entry={{ kind: 'meal', data: item.data, onDelete: deleteMeal }} />;
+            return <JournalEntry key={item.data.id} index={i} hasLine={hasLine} entry={{ kind: 'meal', data: item.data, onDelete: deleteMeal }} />;
           }
           if (item.kind === 'water') {
             return (
-              <JournalEntry key={item.data.id} hasLine={hasLine} entry={{
+              <JournalEntry key={item.data.id} index={i} hasLine={hasLine} entry={{
                 kind: 'water', data: item.data, totalMl: item.runningTotal, goalMl: waterGoal, onDelete: deleteWater,
               }} />
             );
