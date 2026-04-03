@@ -8,7 +8,9 @@ import { Skeleton } from '../components/Skeleton';
 
 type Period = '7d' | '30d' | '3m';
 
-function isoDate(d: Date) { return d.toISOString().split('T')[0]; }
+function isoDate(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
 
 function daysAgo(n: number) {
   const d = new Date();
