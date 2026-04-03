@@ -16,6 +16,27 @@ function daysAgo(n: number) {
   return d;
 }
 
+const tooltipStyle: React.CSSProperties = {
+  background: '#1a1a1a',
+  border: '1px solid #2a2a2a',
+  borderRadius: 8,
+  fontSize: 12,
+  color: '#f0f0f0',
+  padding: '6px 10px',
+};
+
+function BarTooltip({ active, payload, unit }: { active?: boolean; payload?: { value: number; payload: { date: string } }[]; unit: string }) {
+  if (!active || !payload?.length) return null;
+  const d = new Date(payload[0].payload.date + 'T12:00:00');
+  const label = d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+  return (
+    <div style={tooltipStyle}>
+      <div style={{ fontSize: 10, color: '#555', marginBottom: 2 }}>{label}</div>
+      <div style={{ fontWeight: 700 }}>{payload[0].value} {unit}</div>
+    </div>
+  );
+}
+
 export function TrendsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -159,8 +180,9 @@ export function TrendsPage() {
               <XAxis dataKey="date" tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
               <YAxis tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} tickCount={4} />
               <Tooltip
-                contentStyle={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, fontSize: 12, color: '#f0f0f0' }}
-                formatter={(v: unknown) => [`${v} kg`, 'Poids']}
+                contentStyle={tooltipStyle}
+                labelStyle={{ fontSize: 10, color: '#555', marginBottom: 2 }}
+                formatter={(v: unknown) => [`${v} kg`, '']}
                 cursor={{ stroke: '#2a2a2a', strokeWidth: 1 }}
               />
               <Area type="monotone" dataKey="poids" stroke="#d4a843" strokeWidth={2.5} fill="url(#wGrad)" dot={false} activeDot={{ r: 4, fill: '#d4a843' }} />
@@ -200,11 +222,7 @@ export function TrendsPage() {
             <BarChart data={waterData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
               <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} />
               <YAxis tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} tickCount={3} />
-              <Tooltip
-                contentStyle={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, fontSize: 12, color: '#f0f0f0' }}
-                formatter={(v: unknown) => [`${v} ml`, 'Eau']}
-                cursor={{ fill: 'rgba(255,255,255,0.04)' }}
-              />
+              <Tooltip content={<BarTooltip unit="ml" />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
               <Bar dataKey="ml" fill="#0ea5e9" radius={[4, 4, 0, 0]} label={false} />
             </BarChart>
           </ResponsiveContainer>
@@ -222,11 +240,7 @@ export function TrendsPage() {
             <BarChart data={calorieData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
               <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} />
               <YAxis tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} tickCount={3} />
-              <Tooltip
-                contentStyle={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, fontSize: 12, color: '#f0f0f0' }}
-                formatter={(v: unknown) => [`${v} kcal`, 'Calories']}
-                cursor={{ fill: 'rgba(255,255,255,0.04)' }}
-              />
+              <Tooltip content={<BarTooltip unit="kcal" />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
               <Bar dataKey="kcal" radius={[4, 4, 0, 0]}>
                 {calorieData.map((entry, index) => (
                   <Cell key={index} fill={entry.kcal === 0 ? '#2a2a2a' : entry.kcal > calorieGoal ? '#f87171' : '#4ade80'} />
