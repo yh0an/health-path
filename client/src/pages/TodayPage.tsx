@@ -85,22 +85,29 @@ export function TodayPage() {
 
   const items: JournalItem[] = [];
 
+  function entryTime(date: string, time: string | null, createdAt: string): number {
+    if (time) return new Date(`${date}T${time}:00`).getTime();
+    return new Date(createdAt).getTime();
+  }
+
   if (selectedWeight) {
     items.push({ kind: 'weight', time: new Date(selectedWeight.createdAt).getTime(), data: selectedWeight });
   }
   meals.forEach(m => {
-    items.push({ kind: 'meal', time: new Date(m.createdAt).getTime(), data: m });
+    items.push({ kind: 'meal', time: entryTime(m.date, m.time, m.createdAt), data: m });
   });
 
-  const sortedWater = [...waterIntakes].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  const sortedWater = [...waterIntakes].sort((a, b) =>
+    entryTime(a.date, a.time, a.createdAt) - entryTime(b.date, b.time, b.createdAt)
+  );
   let runningWater = 0;
   sortedWater.forEach(w => {
     runningWater += w.amountMl;
-    items.push({ kind: 'water', time: new Date(w.createdAt).getTime(), data: w, runningTotal: runningWater });
+    items.push({ kind: 'water', time: entryTime(w.date, w.time, w.createdAt), data: w, runningTotal: runningWater });
   });
 
   workouts.forEach(wo => {
-    items.push({ kind: 'workout', time: new Date(wo.createdAt).getTime(), data: wo });
+    items.push({ kind: 'workout', time: entryTime(wo.date, wo.time, wo.createdAt), data: wo });
   });
 
   items.sort((a, b) => a.time - b.time);
