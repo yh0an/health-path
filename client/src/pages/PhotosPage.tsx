@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { PhotoEvolutionView } from '../components/PhotoEvolutionView';
-import type { ChangeEvent } from 'react';
 import { photosApi } from '../services/api';
 import type { ProgressPhoto } from '../services/api';
 import { Modal } from '../components/Modal';
@@ -27,39 +26,14 @@ function formatDate(dateStr: string): string {
   return new Date(dateStr + 'T12:00:00').toLocaleDateString('fr-FR');
 }
 
-function AddPhotoCard({ uploading, onClick }: { uploading: boolean; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={uploading}
-      className="aspect-square rounded-lg bg-white border border-dashed border-blue flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform disabled:opacity-50"
-      aria-label="Ajouter une photo"
-    >
-      {uploading ? (
-        <span className="text-xs font-medium text-blue">...</span>
-      ) : (
-        <>
-          <div className="w-8 h-8 rounded-full bg-blue/10 flex items-center justify-center text-blue text-lg font-light">
-            +
-          </div>
-          <span className="text-[10px] font-semibold text-blue leading-tight text-center">
-            Ajouter<br />une photo
-          </span>
-        </>
-      )}
-    </button>
-  );
-}
 
 export function PhotosPage() {
   const [activeCategory, setActiveCategory] = useState<Category | undefined>(undefined);
   const [photos, setPhotos] = useState<ProgressPhoto[]>([]);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<ProgressPhoto | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [mode, setMode] = useState<'gallery' | 'evolution'>('gallery');
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toasts, addToast } = useToast();
 
   const fetchPhotos = useCallback(async () => {
@@ -80,33 +54,6 @@ export function PhotosPage() {
 
   function handleTabClick(value: Category | undefined) {
     setActiveCategory(value);
-  }
-
-  function handleUploadClick() {
-    fileInputRef.current?.click();
-  }
-
-  async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('photo', file);
-    formData.append('category', activeCategory ?? 'FRONT');
-    formData.append('date', new Date().toISOString().split('T')[0]);
-
-    setUploading(true);
-    try {
-      await photosApi.upload(formData);
-      await fetchPhotos();
-      addToast('Photo ajoutée', 'success');
-    } catch {
-      addToast('Erreur lors de l\'upload', 'error');
-    } finally {
-      setUploading(false);
-      // Reset input so same file can be re-selected
-      e.target.value = '';
-    }
   }
 
   async function handleDelete() {
@@ -183,9 +130,7 @@ export function PhotosPage() {
               ))}
             </div>
           ) : photos.length === 0 ? (
-            <div className="grid grid-cols-3 gap-2">
-              <AddPhotoCard uploading={uploading} onClick={handleUploadClick} />
-            </div>
+            <div style={{ textAlign: 'center', color: '#555', padding: '40px 0', fontSize: 13 }}>Aucune photo</div>
           ) : (
             <div className="grid grid-cols-3 gap-2">
               {photos.map((photo) => (
@@ -201,23 +146,12 @@ export function PhotosPage() {
                   />
                 </button>
               ))}
-              {/* Inline add card */}
-              <AddPhotoCard uploading={uploading} onClick={handleUploadClick} />
             </div>
           )}
         </>
       ) : (
         <PhotoEvolutionView photos={photos} />
       )}
-
-      {/* Hidden file input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleFileChange}
-      />
 
       {/* Detail modal */}
       {selectedPhoto && (
