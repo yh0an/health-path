@@ -27,6 +27,7 @@ model User {
   weightEntries        WeightEntry[]
   meals                Meal[]
   waterIntakes         WaterIntake[]
+  workoutSessions      WorkoutSession[]
   progressPhotos       ProgressPhoto[]
   calendarEvents       CalendarEvent[]
   pushSubscriptions    PushSubscription[]
@@ -84,6 +85,31 @@ model WaterIntake {
   amountMl  Int
   time      String?
   createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum WorkoutType {
+  RUNNING
+  CYCLING
+  SWIMMING
+  STRENGTH
+  YOGA
+  HIIT
+  WALKING
+  OTHER
+}
+
+model WorkoutSession {
+  id              String      @id @default(cuid())
+  userId          String
+  date            DateTime    @db.Date
+  time            String?
+  type            WorkoutType
+  durationMinutes Int
+  caloriesBurned  Int?
+  notes           String?
+  createdAt       DateTime    @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

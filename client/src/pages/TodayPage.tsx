@@ -2,8 +2,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
-import { weightApi, nutritionApi, waterApi } from '../services/api';
-import type { WeightEntry, Meal, WaterIntake } from '../services/api';
+import { weightApi, nutritionApi, waterApi, workoutApi } from '../services/api';
+import type { WeightEntry, Meal, WaterIntake, WorkoutSession } from '../services/api';
 import { ObjectivesBar } from '../components/ObjectivesBar';
 import { JournalEntry } from '../components/JournalEntry';
 import { FAB } from '../components/FAB';
@@ -13,6 +13,7 @@ import { WaterAddSheet } from '../components/sheets/WaterAddSheet';
 import { WeightAddSheet } from '../components/sheets/WeightAddSheet';
 import { MealAddSheet } from '../components/sheets/MealAddSheet';
 import { PhotoAddSheet } from '../components/sheets/PhotoAddSheet';
+import { WorkoutAddSheet } from '../components/sheets/WorkoutAddSheet';
 
 function todayStr() { return new Date().toISOString().slice(0, 10); }
 
@@ -29,7 +30,7 @@ function formatDateLabel(dateStr: string): string {
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
-type Sheet = 'quick' | 'water' | 'weight' | 'meal' | 'photo' | null;
+type Sheet = 'quick' | 'water' | 'weight' | 'meal' | 'photo' | 'workout' | null;
 
 type Toast = { id: number; msg: string; type: 'success' | 'error' };
 
@@ -40,6 +41,7 @@ export function TodayPage() {
   const [weightEntries, setWeightEntries] = useState<WeightEntry[]>([]);
   const [meals, setMeals] = useState<Meal[]>([]);
   const [waterIntakes, setWaterIntakes] = useState<WaterIntake[]>([]);
+  const [workouts, setWorkouts] = useState<WorkoutSession[]>([]);
   const [sheet, setSheet] = useState<Sheet>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
@@ -56,14 +58,16 @@ export function TodayPage() {
   }
 
   const fetchAll = useCallback(async () => {
-    const [wRes, mRes, wIntRes] = await Promise.allSettled([
+    const [wRes, mRes, wIntRes, woRes] = await Promise.allSettled([
       weightApi.getEntries(),
       nutritionApi.getMeals(selectedDate),
       waterApi.getIntakes(selectedDate),
+      workoutApi.getSessions(selectedDate),
     ]);
     if (wRes.status === 'fulfilled') setWeightEntries(wRes.value ?? []);
     if (mRes.status === 'fulfilled') setMeals(mRes.value ?? []);
     if (wIntRes.status === 'fulfilled') setWaterIntakes(wIntRes.value ?? []);
+    if (woRes.status === 'fulfilled') setWorkouts(woRes.value ?? []);
   }, [selectedDate]);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
@@ -74,9 +78,10 @@ export function TodayPage() {
 
   // Build journal entries sorted by time
   type JournalItem =
-    | { kind: 'weight'; time: number; data: WeightEntry }
-    | { kind: 'meal';   time: number; data: Meal }
-    | { kind: 'water';  time: number; data: WaterIntake; runningTotal: number };
+    | { kind: 'weight';  time: number; data: WeightEntry }
+    | { kind: 'meal';    time: number; data: Meal }
+    | { kind: 'water';   time: number; data: WaterIntake; runningTotal: number }
+    | { kind: 'workout'; time: number; data: WorkoutSession };
 
   const items: JournalItem[] = [];
 
@@ -92,6 +97,10 @@ export function TodayPage() {
   sortedWater.forEach(w => {
     runningWater += w.amountMl;
     items.push({ kind: 'water', time: new Date(w.createdAt).getTime(), data: w, runningTotal: runningWater });
+  });
+
+  workouts.forEach(wo => {
+    items.push({ kind: 'workout', time: new Date(wo.createdAt).getTime(), data: wo });
   });
 
   items.sort((a, b) => a.time - b.time);
@@ -117,6 +126,14 @@ export function TodayPage() {
       await waterApi.delete(id);
       await fetchAll();
       addToast('Entrée supprimée', 'success');
+    } catch { addToast('Erreur', 'error'); }
+  }
+
+  async function deleteWorkout(id: string) {
+    try {
+      await workoutApi.delete(id);
+      setWorkouts(p => p.filter(w => w.id !== id));
+      addToast('Séance supprimée', 'success');
     } catch { addToast('Erreur', 'error'); }
   }
 
@@ -209,6 +226,9 @@ export function TodayPage() {
               }} />
             );
           }
+          if (item.kind === 'workout') {
+            return <JournalEntry key={item.data.id} index={i} hasLine={hasLine} entry={{ kind: 'workout', data: item.data, onDelete: deleteWorkout }} />;
+          }
           return null;
         })}
 
@@ -255,6 +275,10 @@ export function TodayPage() {
 
       <BottomSheet open={sheet === 'photo'} onClose={() => setSheet(null)}>
         <PhotoAddSheet onClose={() => setSheet(null)} onAdded={fetchAll} onToast={addToast} />
+      </BottomSheet>
+
+      <BottomSheet open={sheet === 'workout'} onClose={() => setSheet(null)}>
+        <WorkoutAddSheet onClose={() => setSheet(null)} onAdded={fetchAll} onToast={addToast} />
       </BottomSheet>
     </>
   );

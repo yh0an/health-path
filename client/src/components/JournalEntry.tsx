@@ -1,12 +1,13 @@
 // client/src/components/JournalEntry.tsx
 import type { ReactNode } from 'react';
 import { motion } from 'motion/react';
-import type { WeightEntry, Meal, WaterIntake } from '../services/api';
+import type { WeightEntry, Meal, WaterIntake, WorkoutSession } from '../services/api';
 
 type EntryType =
-  | { kind: 'weight'; data: WeightEntry; heightCm: number | null; targetWeightKg: number | null; onDelete: (id: string) => void }
-  | { kind: 'meal';   data: Meal;        onDelete: (id: string) => void }
-  | { kind: 'water';  data: WaterIntake; totalMl: number; goalMl: number; onDelete: (id: string) => void }
+  | { kind: 'weight';  data: WeightEntry;    heightCm: number | null; targetWeightKg: number | null; onDelete: (id: string) => void }
+  | { kind: 'meal';    data: Meal;            onDelete: (id: string) => void }
+  | { kind: 'water';   data: WaterIntake;     totalMl: number; goalMl: number; onDelete: (id: string) => void }
+  | { kind: 'workout'; data: WorkoutSession;  onDelete: (id: string) => void }
   | { kind: 'pending'; label: string };
 
 const MEAL_LABELS = {
@@ -15,6 +16,17 @@ const MEAL_LABELS = {
   DINNER: 'Dîner',
   SNACK: 'Collation',
 } as const;
+
+const WORKOUT_LABELS: Record<string, string> = {
+  RUNNING: 'Course',
+  CYCLING: 'Vélo',
+  SWIMMING: 'Natation',
+  STRENGTH: 'Muscu',
+  HIIT: 'HIIT',
+  YOGA: 'Yoga',
+  WALKING: 'Marche',
+  OTHER: 'Sport',
+};
 
 function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
@@ -87,12 +99,7 @@ function MealCard({ meal, onDelete }: { meal: Meal; onDelete: () => void }) {
       {allPhotos.length > 0 && (
         <div style={{ display: 'flex', gap: 6, marginTop: 8, overflowX: 'auto' }}>
           {allPhotos.map((url, i) => (
-            <img
-              key={i}
-              src={url}
-              alt="Repas"
-              style={{ width: 64, height: 64, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }}
-            />
+            <img key={i} src={url} alt="Repas" style={{ width: 64, height: 64, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
           ))}
         </div>
       )}
@@ -133,6 +140,27 @@ function WaterCard({ entry, totalMl, goalMl, onDelete }: {
   );
 }
 
+function WorkoutCard({ session, onDelete }: { session: WorkoutSession; onDelete: () => void }) {
+  return (
+    <div style={{ ...cardBase, borderLeft: '3px solid #a78bfa' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          {WORKOUT_LABELS[session.type] ?? session.type}
+        </span>
+        <DeleteBtn onDelete={onDelete} />
+      </div>
+      <div style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: -0.5, marginTop: 2 }}>
+        {session.durationMinutes} min
+      </div>
+      <div style={{ fontSize: 12, color: '#aaa', marginTop: 3 }}>
+        {session.caloriesBurned !== null && `${session.caloriesBurned} kcal`}
+        {session.caloriesBurned !== null && session.notes && ' · '}
+        {session.notes}
+      </div>
+    </div>
+  );
+}
+
 function PendingCard({ label }: { label: string }) {
   return (
     <div style={{ flex: 1, background: 'transparent', borderRadius: 14, padding: '10px 13px', border: '1px dashed #3a3a3a' }}>
@@ -168,6 +196,10 @@ export function JournalEntry({ entry, hasLine, index = 0 }: { entry: EntryType; 
     time = entry.data.time ?? formatTime(entry.data.createdAt);
     color = '#0ea5e9';
     card = <WaterCard entry={entry.data} totalMl={entry.totalMl} goalMl={entry.goalMl} onDelete={() => entry.onDelete(entry.data.id)} />;
+  } else if (entry.kind === 'workout') {
+    time = entry.data.time ?? formatTime(entry.data.createdAt);
+    color = '#a78bfa';
+    card = <WorkoutCard session={entry.data} onDelete={() => entry.onDelete(entry.data.id)} />;
   }
 
   return (

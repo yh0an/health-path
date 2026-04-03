@@ -11,6 +11,7 @@ import photosRoutes from './routes/photos';
 import calendarRoutes from './routes/calendar';
 import settingsRoutes from './routes/settings';
 import pushRoutes from './routes/push';
+import workoutRoutes from './routes/workout';
 import { authMiddleware } from './middleware/auth';
 import { initWebPush, startCronJobs } from './services/push.service';
 
@@ -32,6 +33,7 @@ app.use('/api/photos', authMiddleware, photosRoutes);
 app.use('/api/calendar', authMiddleware, calendarRoutes);
 app.use('/api/settings', authMiddleware, settingsRoutes);
 app.use('/api/push', authMiddleware, pushRoutes);
+app.use('/api/workouts', authMiddleware, workoutRoutes);
 
 // Fichiers uploadés (protégés)
 app.use('/api/uploads', authMiddleware, express.static(path.join(__dirname, '..', 'uploads')));

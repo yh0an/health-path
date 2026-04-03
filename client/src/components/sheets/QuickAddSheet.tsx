@@ -1,6 +1,6 @@
 // client/src/components/sheets/QuickAddSheet.tsx
 import type { CSSProperties } from 'react';
-type ActionType = 'water' | 'meal' | 'weight' | 'photo';
+type ActionType = 'water' | 'meal' | 'weight' | 'photo' | 'workout';
 
 interface QuickAddSheetProps {
   onSelect: (action: ActionType) => void;
@@ -66,6 +66,9 @@ export function QuickAddSheet({ onSelect, onClose: _onClose, isWeighDay, waterMl
     suggestions.push({ type: 'meal', label: 'Repas / Collation', hint: 'Logger un repas', highlighted: false });
   }
 
+  // Sport toujours disponible
+  suggestions.push({ type: 'workout', label: 'Séance de sport', hint: 'Course, muscu, yoga…', highlighted: false });
+
   // Photo toujours disponible
   suggestions.push({ type: 'photo', label: "Photo d'évolution", hint: 'Face, profil ou dos', highlighted: false });
 
@@ -81,7 +84,7 @@ export function QuickAddSheet({ onSelect, onClose: _onClose, isWeighDay, waterMl
     marginBottom: 8,
   });
 
-  const icons: Record<ActionType, string> = { water: '💧', meal: '🍽', weight: '⚖️', photo: '📷' };
+  const icons: Record<ActionType, string> = { water: '💧', meal: '🍽', weight: '⚖️', photo: '📷', workout: '🏃' };
 
   return (
     <div style={{ padding: '0 16px 16px' }}>
