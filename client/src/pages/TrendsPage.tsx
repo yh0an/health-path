@@ -161,6 +161,7 @@ export function TrendsPage() {
               <Tooltip
                 contentStyle={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, fontSize: 12, color: '#f0f0f0' }}
                 formatter={(v: unknown) => [`${v} kg`, 'Poids']}
+                cursor={{ stroke: '#2a2a2a', strokeWidth: 1 }}
               />
               <Area type="monotone" dataKey="poids" stroke="#d4a843" strokeWidth={2.5} fill="url(#wGrad)" dot={false} activeDot={{ r: 4, fill: '#d4a843' }} />
             </AreaChart>
@@ -202,6 +203,7 @@ export function TrendsPage() {
               <Tooltip
                 contentStyle={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, fontSize: 12, color: '#f0f0f0' }}
                 formatter={(v: unknown) => [`${v} ml`, 'Eau']}
+                cursor={{ fill: 'rgba(255,255,255,0.04)' }}
               />
               <Bar dataKey="ml" fill="#0ea5e9" radius={[4, 4, 0, 0]} label={false} />
             </BarChart>
@@ -223,6 +225,7 @@ export function TrendsPage() {
               <Tooltip
                 contentStyle={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, fontSize: 12, color: '#f0f0f0' }}
                 formatter={(v: unknown) => [`${v} kcal`, 'Calories']}
+                cursor={{ fill: 'rgba(255,255,255,0.04)' }}
               />
               <Bar dataKey="kcal" radius={[4, 4, 0, 0]}>
                 {calorieData.map((entry, index) => (
