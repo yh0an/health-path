@@ -24,6 +24,8 @@ const WORKOUT_LABELS: Record<string, string> = {
   STRENGTH: 'Muscu',
   HIIT: 'HIIT',
   YOGA: 'Yoga',
+  ELLIPTICAL: 'Vélo elliptique',
+  PADEL: 'Padel',
   WALKING: 'Marche',
   OTHER: 'Sport',
 };

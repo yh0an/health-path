@@ -17,6 +17,8 @@ const WORKOUT_TYPES: { value: WorkoutType; label: string; icon: string }[] = [
   { value: 'STRENGTH', label: 'Muscu',     icon: '🏋️' },
   { value: 'HIIT',     label: 'HIIT',      icon: '⚡' },
   { value: 'YOGA',     label: 'Yoga',      icon: '🧘' },
+  { value: 'ELLIPTICAL', label: 'Elliptique', icon: '🔄' },
+  { value: 'PADEL',    label: 'Padel',     icon: '🎾' },
   { value: 'WALKING',  label: 'Marche',    icon: '🚶' },
   { value: 'OTHER',    label: 'Autre',     icon: '🎯' },
 ];

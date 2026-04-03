@@ -92,11 +92,13 @@ model WaterIntake {
 enum WorkoutType {
   RUNNING
   CYCLING
+  ELLIPTICAL
   SWIMMING
   STRENGTH
   YOGA
   HIIT
   WALKING
+  PADEL
   OTHER
 }
 

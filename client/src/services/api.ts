@@ -184,7 +184,7 @@ export interface Meal {
   createdAt: string;
 }
 export interface WaterIntake { id: string; amountMl: number; date: string; time: string | null; createdAt: string; }
-export type WorkoutType = 'RUNNING' | 'CYCLING' | 'SWIMMING' | 'STRENGTH' | 'YOGA' | 'HIIT' | 'WALKING' | 'OTHER';
+export type WorkoutType = 'RUNNING' | 'CYCLING' | 'ELLIPTICAL' | 'SWIMMING' | 'STRENGTH' | 'YOGA' | 'HIIT' | 'WALKING' | 'PADEL' | 'OTHER';
 export interface WorkoutSession { id: string; date: string; time: string | null; type: WorkoutType; durationMinutes: number; caloriesBurned: number | null; notes: string | null; createdAt: string; }
 export interface ProgressPhoto { id: string; date: string; category: 'FRONT' | 'SIDE' | 'BACK'; imagePath: string; notes: string | null; createdAt: string; }
 export interface CalendarEvent { id: string; title: string; description: string | null; date: string; endDate: string | null; eventType: 'MEDICAL' | 'SPORT' | 'OTHER'; sportType: string | null; isRecurring: boolean; completed: boolean; }
