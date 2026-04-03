@@ -32,8 +32,9 @@ export async function createWorkout(req: AuthRequest, res: Response): Promise<vo
 }
 
 export async function deleteWorkout(req: AuthRequest, res: Response): Promise<void> {
-  const { id } = req.params;
-  const workout = await prisma.workoutSession.findFirst({ where: { id, userId: req.userId! } });
+  const id = req.params.id as string;
+  const userId = req.userId!;
+  const workout = await prisma.workoutSession.findFirst({ where: { id, userId } });
   if (!workout) { res.status(404).json({ error: 'Not found' }); return; }
   await prisma.workoutSession.delete({ where: { id } });
   res.status(204).send();
