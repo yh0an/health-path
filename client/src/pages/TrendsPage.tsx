@@ -102,7 +102,7 @@ export function TrendsPage() {
         const key = isoDate(d);
         return {
           date: key,
-          label: d.toLocaleDateString('fr-FR', { weekday: 'short' }).slice(0, 1).toUpperCase(),
+          label: d.toLocaleDateString('fr-FR', { weekday: 'short' }).slice(0, 3),
           kcal: mealsByDay[key] ?? 0,
         };
       });
