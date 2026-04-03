@@ -86,7 +86,7 @@ export function TodayPage() {
   const items: JournalItem[] = [];
 
   function entryTime(date: string, time: string | null, createdAt: string): number {
-    if (time) return new Date(`${date}T${time}:00`).getTime();
+    if (time) return new Date(`${date.slice(0, 10)}T${time}:00`).getTime();
     return new Date(createdAt).getTime();
   }
 
