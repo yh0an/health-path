@@ -224,8 +224,8 @@ export function TrendsPage() {
             <BarChart data={waterData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
               <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} />
               <YAxis tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} tickCount={3} />
-              <Tooltip content={<BarTooltip unit="ml" />} cursor={<rect fill="none" stroke="none" strokeWidth={0} />} />
-              <Bar dataKey="ml" fill="#0ea5e9" radius={[4, 4, 0, 0]} label={false} activeBar={{ fill: '#0ea5e9', stroke: 'none', strokeWidth: 0 }} />
+              <Tooltip content={<BarTooltip unit="ml" />} cursor={false} />
+              <Bar dataKey="ml" fill="#0ea5e9" radius={[4, 4, 0, 0]} label={false} activeBar={{ fill: '#0ea5e9', stroke: 'none', strokeWidth: 0, opacity: 1 }} />
             </BarChart>
           </ResponsiveContainer>
         )}
@@ -242,7 +242,7 @@ export function TrendsPage() {
             <BarChart data={calorieData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
               <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} />
               <YAxis tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} tickCount={3} />
-              <Tooltip content={<BarTooltip unit="kcal" />} cursor={<rect fill="none" stroke="none" strokeWidth={0} />} />
+              <Tooltip content={<BarTooltip unit="kcal" />} cursor={false} />
               <Bar dataKey="kcal" radius={[4, 4, 0, 0]} activeBar={{ stroke: 'none', strokeWidth: 0 }}>
                 {calorieData.map((entry, index) => (
                   <Cell key={index} fill={entry.kcal === 0 ? '#2a2a2a' : entry.kcal > calorieGoal ? '#f87171' : '#4ade80'} />

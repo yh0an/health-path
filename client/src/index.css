@@ -34,3 +34,9 @@ body {
 }
 
 .recharts-tooltip-cursor { display: none !important; }
+.recharts-wrapper svg,
+.recharts-surface,
+.recharts-wrapper { outline: none !important; user-select: none; }
+.recharts-bar-rectangle,
+.recharts-rectangle { outline: none !important; }
+.recharts-active-bar { stroke: none !important; stroke-width: 0 !important; }
