@@ -37,4 +37,9 @@ body {
 .recharts-wrapper,
 .recharts-wrapper svg,
 .recharts-surface { outline: none !important; user-select: none; -webkit-tap-highlight-color: transparent; }
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-surface:focus,
+.recharts-surface:focus-visible { outline: none !important; box-shadow: none !important; }
 .recharts-active-bar { stroke: none !important; stroke-width: 0 !important; }
+.recharts-wrapper svg g { outline: none !important; }

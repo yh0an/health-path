@@ -171,7 +171,7 @@ export function TrendsPage() {
           <div style={{ textAlign: 'center', color: '#2a2a2a', padding: '24px 0', fontSize: 12 }}>Aucune donnée</div>
         ) : (
           <ResponsiveContainer width="100%" height={160}>
-            <AreaChart data={weightData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
+            <AreaChart data={weightData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }} accessibilityLayer={false}>
               <defs>
                 <linearGradient id="wGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#d4a843" stopOpacity={0.3} />
@@ -221,11 +221,11 @@ export function TrendsPage() {
         <div style={{ fontSize: 11, fontWeight: 700, color: '#0ea5e9', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>Hydratation — 7 jours</div>
         {loading ? <Skeleton className="h-24 w-full" /> : (
           <ResponsiveContainer width="100%" height={100}>
-            <BarChart data={waterData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
+            <BarChart data={waterData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }} accessibilityLayer={false}>
               <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} />
               <YAxis tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} tickCount={3} />
               <Tooltip content={<BarTooltip unit="ml" />} cursor={false} />
-              <Bar dataKey="ml" fill="#0ea5e9" radius={[4, 4, 0, 0]} label={false} activeBar={{ fill: '#0ea5e9', stroke: 'none', strokeWidth: 0, opacity: 1 }} />
+              <Bar dataKey="ml" fill="#0ea5e9" radius={[4, 4, 0, 0]} label={false} activeBar={false} />
             </BarChart>
           </ResponsiveContainer>
         )}
@@ -239,11 +239,11 @@ export function TrendsPage() {
         <div style={{ fontSize: 11, fontWeight: 700, color: '#d4a843', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>Calories — 7 jours</div>
         {loading ? <Skeleton className="h-24 w-full" /> : (
           <ResponsiveContainer width="100%" height={100}>
-            <BarChart data={calorieData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
+            <BarChart data={calorieData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }} accessibilityLayer={false}>
               <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} />
               <YAxis tick={{ fontSize: 9, fill: '#333' }} tickLine={false} axisLine={false} tickCount={3} />
               <Tooltip content={<BarTooltip unit="kcal" />} cursor={false} />
-              <Bar dataKey="kcal" radius={[4, 4, 0, 0]} activeBar={{ stroke: 'none', strokeWidth: 0 }}>
+              <Bar dataKey="kcal" radius={[4, 4, 0, 0]} activeBar={false}>
                 {calorieData.map((entry, index) => (
                   <Cell key={index} fill={entry.kcal === 0 ? '#2a2a2a' : entry.kcal > calorieGoal ? '#f87171' : '#4ade80'} />
                 ))}
