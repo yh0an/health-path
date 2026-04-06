@@ -133,6 +133,12 @@ export const calendarApi = {
   delete: (id: string) => request<void>(`/calendar/${id}`, { method: 'DELETE' }),
 };
 
+// Admin
+export const adminApi = {
+  getStats: () => request<AdminStats>('/admin/stats'),
+  getUsers: () => request<AdminUser[]>('/admin/users'),
+};
+
 // Push
 export const pushApi = {
   getVapidKey: () => request<{ publicKey: string }>('/push/vapid-public-key'),
@@ -156,6 +162,7 @@ export interface UserProfile extends User {
   sleepHour: number;
   weighDay: number;
   notificationSettings: NotificationSettings | null;
+  isAdmin: boolean;
 }
 export interface NotificationSettings {
   waterReminderEnabled: boolean;
@@ -194,3 +201,17 @@ export interface WorkoutSession { id: string; date: string; time: string | null;
 export interface ProgressPhoto { id: string; date: string; category: 'FRONT' | 'SIDE' | 'BACK'; imagePath: string; notes: string | null; createdAt: string; }
 export interface CalendarEvent { id: string; title: string; description: string | null; date: string; endDate: string | null; eventType: 'MEDICAL' | 'SPORT' | 'OTHER'; sportType: string | null; isRecurring: boolean; completed: boolean; }
 export interface CreateEventPayload { title: string; date: string; eventType: string; description?: string; endDate?: string; sportType?: string; isRecurring?: boolean; recurrenceRule?: string; }
+export interface AdminStats {
+  totals: { users: number; meals: number; workouts: number; weightEntries: number; waterIntakes: number };
+  last7Days: { meals: number; workouts: number; weightEntries: number; avgWaterMl: number };
+  activityLast30Days: { date: string; count: number }[];
+}
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  isAdmin: boolean;
+  counts: { meals: number; workouts: number; weightEntries: number };
+  lastActivityAt: string | null;
+}
