@@ -105,10 +105,19 @@ function MealCard({ meal, onDelete, onPress }: { meal: Meal; onDelete: () => voi
         </div>
       </div>
       {allPhotos.length > 0 && (
-        <div style={{ display: 'flex', gap: 6, marginTop: 8, overflowX: 'auto' }}>
-          {allPhotos.map((url, i) => (
-            <img key={i} src={url} alt="Repas" style={{ width: 64, height: 64, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
-          ))}
+        <div style={{ display: 'flex', gap: 10, marginTop: 8, alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', gap: 5, overflowX: 'auto', flexShrink: 0, maxWidth: '45%' }}>
+            {allPhotos.map((url, i) => (
+              <img key={i} src={url} alt="Repas" style={{ width: 64, height: 64, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
+            ))}
+          </div>
+          {meal.itemsJson && meal.itemsJson.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 3, flex: 1, justifyContent: 'center', minHeight: 64 }}>
+              {meal.itemsJson.map((item, i) => (
+                <span key={i} style={{ fontSize: 11, color: '#666', lineHeight: 1.3 }}>· {item.name}</span>
+              ))}
+            </div>
+          )}
         </div>
       )}
       {meal.estimatedKcal !== null ? (
