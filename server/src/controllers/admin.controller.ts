@@ -53,6 +53,21 @@ export async function getStats(_req: AuthRequest, res: Response): Promise<void> 
   });
 }
 
+export async function updateUser(req: AuthRequest, res: Response): Promise<void> {
+  const { id } = req.params;
+  const { name } = req.body;
+  if (!name || typeof name !== 'string' || !name.trim()) {
+    res.status(400).json({ error: 'name is required' });
+    return;
+  }
+  const user = await prisma.user.update({
+    where: { id },
+    data: { name: name.trim() },
+    select: { id: true, name: true },
+  });
+  res.json(user);
+}
+
 export async function getUsers(_req: AuthRequest, res: Response): Promise<void> {
   const users = await prisma.user.findMany({
     orderBy: { createdAt: 'desc' },

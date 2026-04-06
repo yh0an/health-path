@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { adminApi } from '../services/api';
 import type { AdminStats, AdminUser } from '../services/api';
@@ -27,6 +27,58 @@ function KpiCard({ label, value, color }: { label: string; value: string | numbe
       <div style={{ fontSize: 22, fontWeight: 900, color, letterSpacing: -0.5 }}>{value}</div>
       <div style={{ fontSize: 10, color: '#555', textTransform: 'uppercase', letterSpacing: '0.8px', marginTop: 4 }}>{label}</div>
     </div>
+  );
+}
+
+function EditableName({ user, onSaved }: { user: AdminUser; onSaved: (id: string, name: string) => void }) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(user.name);
+  const [saving, setSaving] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function startEdit() { setEditing(true); setTimeout(() => inputRef.current?.select(), 0); }
+
+  function cancel() { setValue(user.name); setEditing(false); }
+
+  async function save() {
+    const trimmed = value.trim();
+    if (!trimmed || trimmed === user.name) { cancel(); return; }
+    setSaving(true);
+    try {
+      await adminApi.updateUser(user.id, trimmed);
+      onSaved(user.id, trimmed);
+      setEditing(false);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (editing) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <input
+          ref={inputRef}
+          value={value}
+          onChange={e => setValue(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') save(); if (e.key === 'Escape') cancel(); }}
+          disabled={saving}
+          style={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: 6, color: '#f0f0f0', fontSize: 12, fontWeight: 600, padding: '3px 7px', outline: 'none', width: 120 }}
+          autoFocus
+        />
+        <button onClick={save} disabled={saving} style={{ background: 'none', border: 'none', color: '#4ade80', fontSize: 14, cursor: 'pointer', padding: 0, lineHeight: 1 }}>✓</button>
+        <button onClick={cancel} style={{ background: 'none', border: 'none', color: '#555', fontSize: 14, cursor: 'pointer', padding: 0, lineHeight: 1 }}>✕</button>
+      </div>
+    );
+  }
+
+  return (
+    <span
+      onClick={startEdit}
+      title="Cliquer pour modifier"
+      style={{ cursor: 'pointer', borderBottom: '1px dashed #333', paddingBottom: 1 }}
+    >
+      {value}
+    </span>
   );
 }
 
@@ -138,7 +190,8 @@ export function AdminPage() {
               {users.map((u, i) => (
                 <tr key={u.id} style={{ borderBottom: i < users.length - 1 ? '1px solid #1a1a1a' : 'none' }}>
                   <td style={{ padding: '12px 16px', color: '#f0f0f0', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                    {u.name}{u.isAdmin && <span style={{ marginLeft: 6, fontSize: 9, color: '#d4a843', background: '#1a150a', padding: '1px 5px', borderRadius: 99, border: '1px solid #3a2e0a' }}>admin</span>}
+                    <EditableName user={u} onSaved={(id, name) => setUsers(prev => prev.map(x => x.id === id ? { ...x, name } : x))} />
+                    {u.isAdmin && <span style={{ marginLeft: 6, fontSize: 9, color: '#d4a843', background: '#1a150a', padding: '1px 5px', borderRadius: 99, border: '1px solid #3a2e0a' }}>admin</span>}
                   </td>
                   <td style={{ padding: '12px 16px', color: '#666', whiteSpace: 'nowrap' }}>{u.email}</td>
                   <td style={{ padding: '12px 16px', color: '#555', whiteSpace: 'nowrap' }}>{formatDateLong(u.createdAt)}</td>

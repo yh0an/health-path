@@ -137,6 +137,8 @@ export const calendarApi = {
 export const adminApi = {
   getStats: () => request<AdminStats>('/admin/stats'),
   getUsers: () => request<AdminUser[]>('/admin/users'),
+  updateUser: (id: string, name: string) =>
+    request<{ id: string; name: string }>(`/admin/users/${id}`, { method: 'PATCH', body: JSON.stringify({ name }) }),
 };
 
 // Push
