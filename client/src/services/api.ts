@@ -79,6 +79,7 @@ export const nutritionApi = {
       return r.json() as Promise<Meal>;
     });
   },
+  getById: (id: string) => request<Meal>(`/nutrition/${id}`),
   delete: (id: string) => request<void>(`/nutrition/${id}`, { method: 'DELETE' }),
 };
 

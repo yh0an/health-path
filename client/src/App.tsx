@@ -8,6 +8,7 @@ import { TodayPage } from './pages/TodayPage';
 import { TrendsPage } from './pages/TrendsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { PhotosPage } from './pages/PhotosPage';
+import { MealDetailPage } from './pages/MealDetailPage';
 import { AdminPage } from './pages/AdminPage';
 import { Skeleton } from './components/Skeleton';
 
@@ -39,6 +40,7 @@ function ProtectedRoutes() {
         <Route path="/trends" element={<TrendsPage />} />
         <Route path="/photos" element={<PhotosPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/meal/:id" element={<MealDetailPage />} />
       </Routes>
     </Layout>
   );

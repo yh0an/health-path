@@ -1,5 +1,6 @@
 // client/src/pages/TodayPage.tsx
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
 import { weightApi, nutritionApi, waterApi, workoutApi } from '../services/api';
@@ -14,7 +15,6 @@ import { WeightAddSheet } from '../components/sheets/WeightAddSheet';
 import { MealAddSheet } from '../components/sheets/MealAddSheet';
 import { PhotoAddSheet } from '../components/sheets/PhotoAddSheet';
 import { WorkoutAddSheet } from '../components/sheets/WorkoutAddSheet';
-import { MealDetailSheet } from '../components/sheets/MealDetailSheet';
 
 function todayStr() { return new Date().toISOString().slice(0, 10); }
 
@@ -37,6 +37,7 @@ type Toast = { id: number; msg: string; type: 'success' | 'error' };
 
 export function TodayPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [selectedDate, setSelectedDate] = useState(todayStr());
   const [weightEntries, setWeightEntries] = useState<WeightEntry[]>([]);
@@ -44,7 +45,6 @@ export function TodayPage() {
   const [waterIntakes, setWaterIntakes] = useState<WaterIntake[]>([]);
   const [workouts, setWorkouts] = useState<WorkoutSession[]>([]);
   const [sheet, setSheet] = useState<Sheet>(null);
-  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const isToday = selectedDate === todayStr();
@@ -235,7 +235,7 @@ export function TodayPage() {
             );
           }
           if (item.kind === 'meal') {
-            return <JournalEntry key={item.data.id} index={i} hasLine={hasLine} entry={{ kind: 'meal', data: item.data, onDelete: deleteMeal, onPress: setSelectedMeal }} />;
+            return <JournalEntry key={item.data.id} index={i} hasLine={hasLine} entry={{ kind: 'meal', data: item.data, onDelete: deleteMeal, onPress: m => navigate(`/meal/${m.id}`, { state: { meal: m } }) }} />;
           }
           if (item.kind === 'water') {
             return (
@@ -300,15 +300,6 @@ export function TodayPage() {
         <WorkoutAddSheet onClose={() => setSheet(null)} onAdded={fetchAll} onToast={addToast} defaultDate={selectedDate} />
       </BottomSheet>
 
-      <BottomSheet open={selectedMeal !== null} onClose={() => setSelectedMeal(null)}>
-        {selectedMeal && (
-          <MealDetailSheet
-            meal={selectedMeal}
-            onClose={() => setSelectedMeal(null)}
-            onDelete={id => { deleteMeal(id); setSelectedMeal(null); }}
-          />
-        )}
-      </BottomSheet>
     </>
   );
 }

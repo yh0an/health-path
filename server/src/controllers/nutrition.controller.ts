@@ -31,6 +31,16 @@ export async function getMeals(req: AuthRequest, res: Response): Promise<void> {
   }
 }
 
+export async function getMealById(req: AuthRequest, res: Response): Promise<void> {
+  const id = req.params['id'] as string;
+  const meal = await prisma.meal.findFirst({
+    where: { id, userId: req.userId! },
+    include: { photos: { orderBy: { order: 'asc' } } },
+  });
+  if (!meal) { res.status(404).json({ error: 'Repas introuvable' }); return; }
+  res.json(meal);
+}
+
 export async function analyzeMeal(req: AuthRequest, res: Response): Promise<void> {
   const files = req.files as Express.Multer.File[];
   if (!files || files.length === 0) {
