@@ -22,6 +22,7 @@ model User {
   weighDay       Int      @default(1)
   wakeHour       Int      @default(8)
   sleepHour      Int      @default(22)
+  isAdmin        Boolean  @default(false)
   createdAt      DateTime @default(now())
 
   weightEntries        WeightEntry[]
