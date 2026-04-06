@@ -149,7 +149,7 @@ export const pushApi = {
 };
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-export interface User { id: string; email: string; name: string; }
+export interface User { id: string; email: string; name: string; isAdmin: boolean; }
 export interface UserProfile extends User {
   heightCm: number | null;
   targetWeightKg: number | null;

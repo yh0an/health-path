@@ -27,7 +27,7 @@ export async function register(req: Request, res: Response): Promise<void> {
       targetWeightKg: targetWeightKg ? Number(targetWeightKg) : null,
       notificationSettings: { create: {} },
     },
-    select: { id: true, email: true, name: true },
+    select: { id: true, email: true, name: true, isAdmin: true },
   });
 
   const signOptions: SignOptions = {
@@ -65,6 +65,6 @@ export async function login(req: Request, res: Response): Promise<void> {
 
   res.json({
     token,
-    user: { id: user.id, email: user.email, name: user.name },
+    user: { id: user.id, email: user.email, name: user.name, isAdmin: user.isAdmin },
   });
 }
