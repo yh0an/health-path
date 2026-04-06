@@ -19,6 +19,8 @@ export function MealDetailPage() {
   const [loading, setLoading] = useState(!meal);
   const [photoIndex, setPhotoIndex] = useState(0);
 
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
   useEffect(() => {
     if (!meal && id) {
       nutritionApi.getById(id).then(setMeal).finally(() => setLoading(false));
