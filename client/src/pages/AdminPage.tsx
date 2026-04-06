@@ -101,7 +101,7 @@ export function AdminPage() {
                   contentStyle={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 8, fontSize: 11 }}
                   labelStyle={{ color: '#888' }}
                   itemStyle={{ color: '#d4a843' }}
-                  labelFormatter={formatDate}
+                  labelFormatter={(label) => formatDate(String(label))}
                   cursor={false}
                 />
                 <Line
