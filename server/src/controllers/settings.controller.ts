@@ -10,6 +10,7 @@ export async function getProfile(req: AuthRequest, res: Response): Promise<void>
       id: true, email: true, name: true, heightCm: true, targetWeightKg: true,
       calorieGoal: true, proteinGoalPct: true, carbsGoalPct: true, fatGoalPct: true,
       waterGoalMl: true, weighDay: true, wakeHour: true, sleepHour: true,
+      isAdmin: true,
       notificationSettings: true,
     },
   });
