@@ -38,9 +38,11 @@ export async function analyzeMeal(req: AuthRequest, res: Response): Promise<void
     return;
   }
   try {
+    const notes = typeof req.body.notes === 'string' ? req.body.notes : undefined;
     const result = await analyzeMealPhotos(
       files.map(f => f.buffer),
       files.map(f => f.mimetype),
+      notes,
     );
     res.json(result);
   } catch {
@@ -48,13 +50,14 @@ export async function analyzeMeal(req: AuthRequest, res: Response): Promise<void
   }
 }
 
+
 export async function createMeal(req: AuthRequest, res: Response): Promise<void> {
   const files = req.files as Express.Multer.File[];
   if (!files || files.length === 0) {
     res.status(400).json({ error: 'Au moins une image requise' });
     return;
   }
-  const { mealType, date, time, description, estimatedKcal } = req.body;
+  const { mealType, date, time, description, estimatedKcal, proteinG, carbsG, fatG, itemsJson } = req.body;
   if (!mealType || !date) {
     res.status(400).json({ error: 'mealType et date requis' });
     return;
@@ -72,6 +75,10 @@ export async function createMeal(req: AuthRequest, res: Response): Promise<void>
         time: time || null,
         description: description || null,
         estimatedKcal: estimatedKcal ? Number(estimatedKcal) : null,
+        proteinG: proteinG ? Number(proteinG) : null,
+        carbsG: carbsG ? Number(carbsG) : null,
+        fatG: fatG ? Number(fatG) : null,
+        itemsJson: itemsJson ? JSON.parse(itemsJson) : null,
         photos: {
           create: uploadedUrls.map((url, i) => ({ imageUrl: url, order: i })),
         },

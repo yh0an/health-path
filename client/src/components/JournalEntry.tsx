@@ -5,7 +5,7 @@ import type { WeightEntry, Meal, WaterIntake, WorkoutSession } from '../services
 
 type EntryType =
   | { kind: 'weight';  data: WeightEntry;    heightCm: number | null; targetWeightKg: number | null; onDelete: (id: string) => void }
-  | { kind: 'meal';    data: Meal;            onDelete: (id: string) => void }
+  | { kind: 'meal';    data: Meal;            onDelete: (id: string) => void; onPress: (meal: Meal) => void }
   | { kind: 'water';   data: WaterIntake;     totalMl: number; goalMl: number; onDelete: (id: string) => void }
   | { kind: 'workout'; data: WorkoutSession;  onDelete: (id: string) => void }
   | { kind: 'pending'; label: string };
@@ -46,7 +46,7 @@ function DotLine({ color, hasLine }: { color: string; hasLine: boolean }) {
 function DeleteBtn({ onDelete }: { onDelete: () => void }) {
   return (
     <button
-      onClick={onDelete}
+      onClick={e => { e.stopPropagation(); onDelete(); }}
       style={{ color: '#666', fontSize: 20, lineHeight: 1, background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px' }}
       aria-label="Supprimer"
     >
@@ -87,16 +87,22 @@ function WeightCard({ entry, heightCm, targetWeightKg, onDelete }: {
   );
 }
 
-function MealCard({ meal, onDelete }: { meal: Meal; onDelete: () => void }) {
+function MealCard({ meal, onDelete, onPress }: { meal: Meal; onDelete: () => void; onPress: () => void }) {
   const photos = meal.photos ?? [];
   const legacyUrl = meal.imageUrl;
   const allPhotos = photos.length > 0 ? photos.map(p => p.imageUrl) : (legacyUrl ? [legacyUrl] : []);
 
   return (
-    <div style={{ ...cardBase, borderLeft: '3px solid #f59e0b' }}>
+    <div
+      onClick={onPress}
+      style={{ ...cardBase, borderLeft: '3px solid #f59e0b', cursor: 'pointer' }}
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{MEAL_LABELS[meal.mealType]}</span>
-        <DeleteBtn onDelete={onDelete} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ fontSize: 10, color: '#444' }}>›</span>
+          <DeleteBtn onDelete={onDelete} />
+        </div>
       </div>
       {allPhotos.length > 0 && (
         <div style={{ display: 'flex', gap: 6, marginTop: 8, overflowX: 'auto' }}>
@@ -106,12 +112,27 @@ function MealCard({ meal, onDelete }: { meal: Meal; onDelete: () => void }) {
         </div>
       )}
       {meal.estimatedKcal !== null ? (
-        <div style={{ marginTop: 6, fontSize: 18, fontWeight: 900, color: '#d4a843' }}>
-          {meal.estimatedKcal} kcal
-          {meal.description && (
-            <span style={{ fontSize: 12, color: '#aaa', fontWeight: 400, marginLeft: 8 }}>{meal.description}</span>
+        <>
+          <div style={{ marginTop: 6, fontSize: 18, fontWeight: 900, color: '#d4a843' }}>
+            {meal.estimatedKcal} kcal
+            {meal.description && (
+              <span style={{ fontSize: 12, color: '#aaa', fontWeight: 400, marginLeft: 8 }}>{meal.description}</span>
+            )}
+          </div>
+          {(meal.proteinG !== null || meal.carbsG !== null || meal.fatG !== null) && (
+            <div style={{ display: 'flex', gap: 10, marginTop: 5 }}>
+              {meal.proteinG !== null && (
+                <span style={{ fontSize: 11, color: '#4ade80' }}><strong>{meal.proteinG}g</strong> <span style={{ color: '#555' }}>P</span></span>
+              )}
+              {meal.carbsG !== null && (
+                <span style={{ fontSize: 11, color: '#f59e0b' }}><strong>{meal.carbsG}g</strong> <span style={{ color: '#555' }}>G</span></span>
+              )}
+              {meal.fatG !== null && (
+                <span style={{ fontSize: 11, color: '#f87171' }}><strong>{meal.fatG}g</strong> <span style={{ color: '#555' }}>L</span></span>
+              )}
+            </div>
           )}
-        </div>
+        </>
       ) : (
         <div style={{ fontSize: 12, color: '#aaa', marginTop: 4 }}>
           {meal.description || 'Repas enregistré'}
@@ -193,7 +214,7 @@ export function JournalEntry({ entry, hasLine, index = 0 }: { entry: EntryType; 
   } else if (entry.kind === 'meal') {
     time = entry.data.time ?? formatTime(entry.data.createdAt);
     color = '#f59e0b';
-    card = <MealCard meal={entry.data} onDelete={() => entry.onDelete(entry.data.id)} />;
+    card = <MealCard meal={entry.data} onDelete={() => entry.onDelete(entry.data.id)} onPress={() => entry.onPress(entry.data)} />;
   } else if (entry.kind === 'water') {
     time = entry.data.time ?? formatTime(entry.data.createdAt);
     color = '#0ea5e9';

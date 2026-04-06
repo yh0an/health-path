@@ -64,6 +64,10 @@ model Meal {
   description   String?
   imageUrl      String?
   estimatedKcal Int?
+  proteinG      Float?
+  carbsG        Float?
+  fatG          Float?
+  itemsJson     Json?
   createdAt     DateTime    @default(now())
   photos        MealPhoto[]
 }

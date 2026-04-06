@@ -14,11 +14,12 @@ interface PhotoAddSheetProps {
   onClose: () => void;
   onAdded: () => void;
   onToast: (msg: string, type: 'success' | 'error') => void;
+  defaultDate?: string;
 }
 
-export function PhotoAddSheet({ onClose, onAdded, onToast }: PhotoAddSheetProps) {
+export function PhotoAddSheet({ onClose, onAdded, onToast, defaultDate }: PhotoAddSheetProps) {
   const [category, setCategory] = useState<Category>('FRONT');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(defaultDate ?? new Date().toISOString().split('T')[0]);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 

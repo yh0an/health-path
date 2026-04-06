@@ -57,7 +57,7 @@ export const weightApi = {
 // Nutrition
 export const nutritionApi = {
   getMeals: (date?: string) => request<Meal[]>(`/nutrition${date ? '?date=' + date : ''}`),
-  analyze: (formData: FormData): Promise<{ estimatedKcal: number; detectedItems: string[] }> => {
+  analyze: (formData: FormData): Promise<{ items: MealItem[]; estimatedKcal: number; proteinG: number; carbsG: number; fatG: number; detectedItems: string[] }> => {
     const token = getToken();
     return fetch(`${BASE}/nutrition/analyze`, {
       method: 'POST',
@@ -65,7 +65,7 @@ export const nutritionApi = {
       body: formData,
     }).then(async r => {
       if (!r.ok) { const err = await r.json(); throw new Error(err.error ?? 'Erreur analyse'); }
-      return r.json() as Promise<{ estimatedKcal: number; detectedItems: string[] }>;
+      return r.json() as Promise<{ items: MealItem[]; estimatedKcal: number; proteinG: number; carbsG: number; fatG: number; detectedItems: string[] }>;
     });
   },
   upload: (formData: FormData): Promise<Meal> => {
@@ -166,6 +166,7 @@ export interface NotificationSettings {
   eventReminderMinutesBefore: number;
 }
 export interface WeightEntry { id: string; weightKg: number; date: string; notes: string | null; createdAt: string; }
+export interface MealItem { name: string; kcal: number; proteinG: number; carbsG: number; fatG: number; }
 export interface MealPhoto {
   id: string;
   mealId: string;
@@ -180,6 +181,10 @@ export interface Meal {
   description: string | null;
   imageUrl: string | null;
   estimatedKcal: number | null;
+  proteinG: number | null;
+  carbsG: number | null;
+  fatG: number | null;
+  itemsJson: MealItem[] | null;
   photos: MealPhoto[];
   createdAt: string;
 }

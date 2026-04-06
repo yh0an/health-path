@@ -8,17 +8,17 @@ interface WaterAddSheetProps {
   onClose: () => void;
   onAdded: () => void;
   onToast: (msg: string, type: 'success' | 'error') => void;
+  defaultDate?: string;
 }
 
-function todayStr() { return new Date().toISOString().slice(0, 10); }
 function nowTime() {
   const n = new Date();
   return `${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}`;
 }
 
-export function WaterAddSheet({ onClose, onAdded, onToast }: WaterAddSheetProps) {
+export function WaterAddSheet({ onClose, onAdded, onToast, defaultDate }: WaterAddSheetProps) {
   const [custom, setCustom] = useState('');
-  const [date, setDate] = useState(todayStr());
+  const [date, setDate] = useState(defaultDate ?? new Date().toISOString().slice(0, 10));
   const [time, setTime] = useState(nowTime());
   const [adding, setAdding] = useState(false);
 

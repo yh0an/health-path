@@ -7,13 +7,12 @@ interface WeightAddSheetProps {
   onClose: () => void;
   onAdded: () => void;
   onToast: (msg: string, type: 'success' | 'error') => void;
+  defaultDate?: string;
 }
 
-function todayStr() { return new Date().toISOString().slice(0, 10); }
-
-export function WeightAddSheet({ lastWeight, onClose, onAdded, onToast }: WeightAddSheetProps) {
+export function WeightAddSheet({ lastWeight, onClose, onAdded, onToast, defaultDate }: WeightAddSheetProps) {
   const [value, setValue] = useState(lastWeight !== null ? String(lastWeight) : '');
-  const [date, setDate] = useState(todayStr());
+  const [date, setDate] = useState(defaultDate ?? new Date().toISOString().slice(0, 10));
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit() {

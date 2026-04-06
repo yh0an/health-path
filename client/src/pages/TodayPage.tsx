@@ -14,6 +14,7 @@ import { WeightAddSheet } from '../components/sheets/WeightAddSheet';
 import { MealAddSheet } from '../components/sheets/MealAddSheet';
 import { PhotoAddSheet } from '../components/sheets/PhotoAddSheet';
 import { WorkoutAddSheet } from '../components/sheets/WorkoutAddSheet';
+import { MealDetailSheet } from '../components/sheets/MealDetailSheet';
 
 function todayStr() { return new Date().toISOString().slice(0, 10); }
 
@@ -43,6 +44,7 @@ export function TodayPage() {
   const [waterIntakes, setWaterIntakes] = useState<WaterIntake[]>([]);
   const [workouts, setWorkouts] = useState<WorkoutSession[]>([]);
   const [sheet, setSheet] = useState<Sheet>(null);
+  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const isToday = selectedDate === todayStr();
@@ -75,6 +77,9 @@ export function TodayPage() {
   const selectedWeight = weightEntries.find(e => new Date(e.date).toISOString().split('T')[0] === selectedDate) ?? null;
   const totalWaterMl = waterIntakes.reduce((s, w) => s + w.amountMl, 0);
   const totalCalories = meals.reduce((s, m) => s + (m.estimatedKcal ?? 0), 0);
+  const totalProtein = meals.reduce((s, m) => s + (m.proteinG ?? 0), 0);
+  const totalCarbs = meals.reduce((s, m) => s + (m.carbsG ?? 0), 0);
+  const totalFat = meals.reduce((s, m) => s + (m.fatG ?? 0), 0);
 
   // Build journal entries sorted by time
   type JournalItem =
@@ -179,6 +184,12 @@ export function TodayPage() {
         calorieGoal={calorieGoal}
         showWeighRing={showWeighRing}
         weighed={!!selectedWeight}
+        proteinG={totalProtein}
+        carbsG={totalCarbs}
+        fatG={totalFat}
+        proteinGoalPct={user?.proteinGoalPct ?? 30}
+        carbsGoalPct={user?.carbsGoalPct ?? 40}
+        fatGoalPct={user?.fatGoalPct ?? 30}
       />
 
       <div style={{ padding: '16px 16px 0' }}>
@@ -224,7 +235,7 @@ export function TodayPage() {
             );
           }
           if (item.kind === 'meal') {
-            return <JournalEntry key={item.data.id} index={i} hasLine={hasLine} entry={{ kind: 'meal', data: item.data, onDelete: deleteMeal }} />;
+            return <JournalEntry key={item.data.id} index={i} hasLine={hasLine} entry={{ kind: 'meal', data: item.data, onDelete: deleteMeal, onPress: setSelectedMeal }} />;
           }
           if (item.kind === 'water') {
             return (
@@ -250,7 +261,7 @@ export function TodayPage() {
         ))}
       </div>
 
-      {isToday && <FAB onClick={() => setSheet('quick')} />}
+      <FAB onClick={() => setSheet('quick')} />
 
       <BottomSheet open={sheet === 'quick'} onClose={() => setSheet(null)}>
         <QuickAddSheet
@@ -264,7 +275,7 @@ export function TodayPage() {
       </BottomSheet>
 
       <BottomSheet open={sheet === 'water'} onClose={() => setSheet(null)}>
-        <WaterAddSheet onClose={() => setSheet(null)} onAdded={fetchAll} onToast={addToast} />
+        <WaterAddSheet onClose={() => setSheet(null)} onAdded={fetchAll} onToast={addToast} defaultDate={selectedDate} />
       </BottomSheet>
 
       <BottomSheet open={sheet === 'weight'} onClose={() => setSheet(null)}>
@@ -273,19 +284,30 @@ export function TodayPage() {
           onClose={() => setSheet(null)}
           onAdded={fetchAll}
           onToast={addToast}
+          defaultDate={selectedDate}
         />
       </BottomSheet>
 
       <BottomSheet open={sheet === 'meal'} onClose={() => setSheet(null)}>
-        <MealAddSheet onClose={() => setSheet(null)} onAdded={fetchAll} onToast={addToast} />
+        <MealAddSheet onClose={() => setSheet(null)} onAdded={fetchAll} onToast={addToast} defaultDate={selectedDate} />
       </BottomSheet>
 
       <BottomSheet open={sheet === 'photo'} onClose={() => setSheet(null)}>
-        <PhotoAddSheet onClose={() => setSheet(null)} onAdded={fetchAll} onToast={addToast} />
+        <PhotoAddSheet onClose={() => setSheet(null)} onAdded={fetchAll} onToast={addToast} defaultDate={selectedDate} />
       </BottomSheet>
 
       <BottomSheet open={sheet === 'workout'} onClose={() => setSheet(null)}>
-        <WorkoutAddSheet onClose={() => setSheet(null)} onAdded={fetchAll} onToast={addToast} />
+        <WorkoutAddSheet onClose={() => setSheet(null)} onAdded={fetchAll} onToast={addToast} defaultDate={selectedDate} />
+      </BottomSheet>
+
+      <BottomSheet open={selectedMeal !== null} onClose={() => setSelectedMeal(null)}>
+        {selectedMeal && (
+          <MealDetailSheet
+            meal={selectedMeal}
+            onClose={() => setSelectedMeal(null)}
+            onDelete={id => { deleteMeal(id); setSelectedMeal(null); }}
+          />
+        )}
       </BottomSheet>
     </>
   );

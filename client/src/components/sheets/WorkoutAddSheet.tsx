@@ -27,14 +27,15 @@ interface WorkoutAddSheetProps {
   onClose: () => void;
   onAdded: () => void;
   onToast: (msg: string, type: 'success' | 'error') => void;
+  defaultDate?: string;
 }
 
-export function WorkoutAddSheet({ onClose, onAdded, onToast }: WorkoutAddSheetProps) {
+export function WorkoutAddSheet({ onClose, onAdded, onToast, defaultDate }: WorkoutAddSheetProps) {
   const [type, setType] = useState<WorkoutType>('RUNNING');
   const [duration, setDuration] = useState('');
   const [calories, setCalories] = useState('');
   const [notes, setNotes] = useState('');
-  const [date, setDate] = useState(todayStr());
+  const [date, setDate] = useState(defaultDate ?? todayStr());
   const [time, setTime] = useState(nowTime());
   const [submitting, setSubmitting] = useState(false);
 
