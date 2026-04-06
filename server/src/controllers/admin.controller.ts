@@ -54,7 +54,7 @@ export async function getStats(_req: AuthRequest, res: Response): Promise<void> 
 }
 
 export async function updateUser(req: AuthRequest, res: Response): Promise<void> {
-  const { id } = req.params;
+  const id = req.params['id'] as string;
   const { name } = req.body;
   if (!name || typeof name !== 'string' || !name.trim()) {
     res.status(400).json({ error: 'name is required' });
