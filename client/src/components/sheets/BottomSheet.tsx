@@ -37,10 +37,13 @@ export function BottomSheet({ open, onClose, children }: BottomSheetProps) {
               borderRadius: '24px 24px 0 0',
               borderTop: '1px solid #1e1e1e',
               paddingTop: 12,
+              maxHeight: 'calc(100dvh - 96px)',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
-            <div style={{ width: 36, height: 3, background: '#2a2a2a', borderRadius: 99, margin: '0 auto 16px' }} />
-            {children}
+            <div style={{ width: 36, height: 3, background: '#2a2a2a', borderRadius: 99, margin: '0 auto 16px', flexShrink: 0 }} />
+            <div style={{ overflowY: 'auto', flex: 1 }}>{children}</div>
           </motion.div>
         </div>
       )}
